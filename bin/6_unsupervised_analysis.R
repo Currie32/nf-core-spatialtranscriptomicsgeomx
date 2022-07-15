@@ -1,0 +1,88 @@
+#!/usr/bin/env Rscript
+
+load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/5_normalisation.RData')
+
+#############################################
+###   Section 6 - Unsupervised Analysis   ###
+#############################################
+
+######################################
+###   Section 6.1 - UMAP & t-SNE   ###
+######################################
+
+library(Biobase)
+library(Rtsne)
+library(umap)
+
+# update defaults for umap to contain a stable random_state (seed)
+custom_umap <- umap::umap.defaults
+custom_umap$random_state <- 42
+
+# run UMAP
+umap_out <-
+  umap(t(log2(assayDataElement(target_demoData , elt = "q_norm"))),  
+       config = custom_umap)
+
+pData(target_demoData)[, c("UMAP1", "UMAP2")] <- umap_out$layout[, c(1,2)]
+
+ggplot(pData(target_demoData),
+       aes(x = UMAP1, y = UMAP2, color = region, shape = class)) +
+  geom_point(size = 3) +
+  theme_bw()
+
+ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_1_unsupervised_analysis_umap.png", device='png')
+
+
+# run tSNE
+set.seed(42) # set the seed for tSNE as well
+
+tsne_out <-
+  Rtsne(t(log2(assayDataElement(target_demoData , elt = "q_norm"))),
+        perplexity = ncol(target_demoData)*.15)
+
+pData(target_demoData)[, c("tSNE1", "tSNE2")] <- tsne_out$Y[, c(1,2)]
+
+ggplot(pData(target_demoData),
+       aes(x = tSNE1, y = tSNE2, color = region, shape = class)) +
+  geom_point(size = 3) +
+  theme_bw()
+
+ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_1_unsupervised_analysis_tsne.png", device='png')
+
+
+##################################################
+###   Section 6.2 - Clustering high CV Genes   ###
+##################################################
+
+library(pheatmap)
+
+# create a log2 transform of the data for analysis
+assayDataElement(object = target_demoData, elt = "log_q") <-
+  assayDataApply(target_demoData, 2, FUN = log, base = 2, elt = "q_norm")
+
+# create CV function
+calc_CV <- function(x) {sd(x) / mean(x)}
+CV_dat <- assayDataApply(target_demoData,
+                         elt = "log_q", MARGIN = 1, calc_CV)
+# show the highest CD genes and their CV values
+table <- data.frame(sort(CV_dat, decreasing = TRUE)[1:5])
+write.csv(table, "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/6_2_table_highest_cd_genes.csv")
+
+# Identify genes in the top 3rd of the CV values
+GOI <- names(CV_dat)[CV_dat > quantile(CV_dat, 0.8)]
+pheatmap(assayDataElement(target_demoData[GOI, ], elt = "log_q"),
+         scale = "row", 
+         show_rownames = FALSE, show_colnames = FALSE,
+         border_color = NA,
+         clustering_method = "average",
+         clustering_distance_rows = "correlation",
+         clustering_distance_cols = "correlation",
+         breaks = seq(-3, 3, 0.05),
+         color = colorRampPalette(c("purple3", "black", "yellow2"))(120),
+         annotation_col = 
+           pData(target_demoData)[, c("class", "segment", "region")])
+
+ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_2_clustering_genes_coefficient_of_variation.png", device='png')
+
+# Save image
+save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/6_unsupervised_analysis.RData')
