@@ -20,4 +20,4 @@ write.csv(
 )
 
 # Save image
-save.image(sprintf'(%s/image/4_3_aggregate_counts.RData', path))
+save.image(sprintf('%s/image/4_3_aggregate_counts.RData', path))

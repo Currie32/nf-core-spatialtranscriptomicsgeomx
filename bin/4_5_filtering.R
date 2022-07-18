@@ -27,6 +27,8 @@ LOQ_Mat <- LOQ_Mat[fData(target_data)$TargetName, ]
 ###   Section 4.5.1 - Segment Gene Detection   ###
 ##################################################
 
+library(dplyr)
+library(ggforce)
 library(knitr)
 
 # Save detection rate information to pheno data

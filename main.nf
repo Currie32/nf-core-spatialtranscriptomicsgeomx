@@ -12,9 +12,6 @@
 nextflow.enable.dsl = 2
 
 params.path_to_data = "$baseDir"
-params.annot = "$baseDir/data/ggal/ggal_1_48850000_49020000.bed.gff"
-params.genome = "$baseDir/data/ggal/ggal_1_48850000_49020000.Ggal71.500bpflank.fa"
-params.outdir = 'results'
 
 workflow {
 
