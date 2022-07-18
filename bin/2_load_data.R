@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
 
 ###############################
 ###   2 - Getting Started   ###
@@ -44,4 +45,4 @@ data <- readNanoStringGeoMxSet(
 )
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/2_load_data.RData')
+save.image(args[1])

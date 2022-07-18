@@ -15,12 +15,12 @@ library(GeomxTools)
 
 # Generally keep the qcCutoffs parameters unchanged. Set removeLocalOutliers to 
 # FALSE if you do not want to remove local outliers
-demoData <- setBioProbeQCFlags(demoData, 
-                               qcCutoffs = list(minProbeRatio = 0.1,
-                                                percentFailGrubbs = 20), 
-                               removeLocalOutliers = TRUE)
+data <- setBioProbeQCFlags(data,
+                           qcCutoffs = list(minProbeRatio = 0.1,
+                                            percentFailGrubbs = 20),
+                           removeLocalOutliers = TRUE)
 
-ProbeQCResults <- fData(demoData)[["QCFlags"]]
+ProbeQCResults <- fData(data)[["QCFlags"]]
 
 # Define QC table for Probe QC
 qc_df <- data.frame(Passed = sum(rowSums(ProbeQCResults[, -1]) == 0),
@@ -35,9 +35,9 @@ qc_df <- data.frame(Passed = sum(rowSums(ProbeQCResults[, -1]) == 0),
 
 #Subset object to exclude all that did not pass Ratio & Global testing
 ProbeQCPassed <- 
-  subset(demoData, 
-         fData(demoData)[["QCFlags"]][,c("LowProbeRatio")] == FALSE &
-           fData(demoData)[["QCFlags"]][,c("GlobalGrubbsOutlier")] == FALSE)
+  subset(data, 
+         fData(data)[["QCFlags"]][,c("LowProbeRatio")] == FALSE &
+           fData(data)[["QCFlags"]][,c("GlobalGrubbsOutlier")] == FALSE)
 
 # Save the dimensions of ProbeQCPassed
 write.csv(
@@ -45,7 +45,7 @@ write.csv(
   "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_2_2_dimensions_after_probe_qc.csv",
 )
 
-demoData <- ProbeQCPassed 
+data <- ProbeQCPassed 
 
 # Save image
 save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_2_probe_qc.RData')

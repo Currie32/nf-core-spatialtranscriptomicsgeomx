@@ -13,12 +13,12 @@ library(reshape2)  # for melt
 # Graph Q3 value vs negGeoMean of Negatives
 ann_of_interest <- "region"
 Stat_data <- 
-  data.frame(row.names = colnames(exprs(target_demoData)),
-             Segment = colnames(exprs(target_demoData)),
-             Annotation = pData(target_demoData)[, ann_of_interest],
-             Q3 = unlist(apply(exprs(target_demoData), 2,
+  data.frame(row.names = colnames(exprs(target_data)),
+             Segment = colnames(exprs(target_data)),
+             Annotation = pData(target_data)[, ann_of_interest],
+             Q3 = unlist(apply(exprs(target_data), 2,
                                quantile, 0.75, na.rm = TRUE)),
-             NegProbe = exprs(target_demoData)[neg_probes, ])
+             NegProbe = exprs(target_data)[neg_probes, ])
 Stat_data_m <- melt(Stat_data, measure.vars = c("Q3", "NegProbe"),
                     variable.name = "Statistic", value.name = "Value")
 
@@ -56,19 +56,19 @@ ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/5_q3_values_vs_neg_
 
 
 # Q3 norm (75th percentile) for WTA/CTA  with or without custom spike-ins
-target_demoData <- normalize(target_demoData ,
-                             norm_method = "quant", 
-                             desiredQuantile = .75,
-                             toElt = "q_norm")
+target_data <- normalize(target_data,
+                         norm_method = "quant", 
+                         desiredQuantile = .75,
+                         toElt = "q_norm")
 
 # Background normalization for WTA/CTA without custom spike-in
-target_demoData <- normalize(target_demoData ,
-                             norm_method = "neg", 
-                             fromElt = "exprs",
-                             toElt = "neg_norm")
+target_data <- normalize(target_data,
+                         norm_method = "neg", 
+                         fromElt = "exprs",
+                         toElt = "neg_norm")
 
 # visualize the first 10 segments with each normalization method
-boxplot(exprs(target_demoData)[,1:10],
+boxplot(exprs(target_data)[,1:10],
         col = "#9EDAE5", main = "Raw Counts",
         log = "y", names = 1:10, xlab = "Segment",
         ylab = "Counts, Raw")
@@ -76,7 +76,7 @@ boxplot(exprs(target_demoData)[,1:10],
 ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/5_segment_counts_raw.png", device='png')
 
 
-boxplot(assayDataElement(target_demoData[,1:10], elt = "q_norm"),
+boxplot(assayDataElement(target_data[,1:10], elt = "q_norm"),
         col = "#2CA02C", main = "Q3 Norm Counts",
         log = "y", names = 1:10, xlab = "Segment",
         ylab = "Counts, Q3 Normalized")

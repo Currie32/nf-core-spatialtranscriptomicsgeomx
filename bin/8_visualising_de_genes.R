@@ -80,9 +80,9 @@ writeLines(table, file_conn)
 close(file_conn)
 
 # show expression for a single target: PDHA1
-ggplot(pData(target_demoData),
+ggplot(pData(target_data),
        aes(x = region, fill = region,
-           y = assayDataElement(target_demoData["PDHA1", ],
+           y = assayDataElement(target_data["PDHA1", ],
                                 elt = "q_norm"))) +
   geom_violin() +
   geom_jitter(width = .2) +
@@ -94,21 +94,21 @@ ggplot(pData(target_demoData),
 ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_2_violin_plot_gene_expression.png", device='png')
 
 
-glom <- pData(target_demoData)$region == "glomerulus"
+glom <- pData(target_data)$region == "glomerulus"
 
 # show expression of PDHA1 vs ITGB1
-ggplot(pData(target_demoData),
-       aes(x = assayDataElement(target_demoData["PDHA1", ],
+ggplot(pData(target_data),
+       aes(x = assayDataElement(target_data["PDHA1", ],
                                 elt = "q_norm"),
-           y = assayDataElement(target_demoData["ITGB1", ],
+           y = assayDataElement(target_data["ITGB1", ],
                                 elt = "q_norm"),
            color = region)) +
   geom_vline(xintercept =
-               max(assayDataElement(target_demoData["PDHA1", glom],
+               max(assayDataElement(target_data["PDHA1", glom],
                                     elt = "q_norm")),
              lty = "dashed", col = "darkgray") +
   geom_hline(yintercept =
-               max(assayDataElement(target_demoData["ITGB1", !glom],
+               max(assayDataElement(target_data["ITGB1", !glom],
                                     elt = "q_norm")),
              lty = "dashed", col = "darkgray") +
   geom_point(size = 3) +
@@ -129,7 +129,7 @@ library(pheatmap)
 
 # select top significant genes based on significance, plot with pheatmap
 GOI <- unique(subset(results, `FDR` < 0.001)$Gene)
-pheatmap(log2(assayDataElement(target_demoData[GOI, ], elt = "q_norm")),
+pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          scale = "row", 
          show_rownames = FALSE, show_colnames = FALSE,
          border_color = NA,
@@ -139,7 +139,7 @@ pheatmap(log2(assayDataElement(target_demoData[GOI, ], elt = "q_norm")),
          cutree_cols = 2, cutree_rows = 2,
          breaks = seq(-3, 3, 0.05),
          color = colorRampPalette(c("purple3", "black", "yellow2"))(120),
-         annotation_col = pData(target_demoData)[, c("region", "class")])
+         annotation_col = pData(target_data)[, c("region", "class")])
 
 ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_3_heatmap_significant_genes.png", device='png')
 
@@ -148,7 +148,7 @@ ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_3_heatmap_signifi
 ###   Section 9.3.1 - MA Plot   ###
 ###################################
 
-results$MeanExp <- rowMeans(assayDataElement(target_demoData, elt = "q_norm"))
+results$MeanExp <- rowMeans(assayDataElement(target_data, elt = "q_norm"))
 
 top_g2 <- results$Gene[results$Gene %in% top_g &
                          results$FDR < 0.001 &

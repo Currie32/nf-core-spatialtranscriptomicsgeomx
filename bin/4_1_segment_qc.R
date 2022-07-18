@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/3_sample_overview.RData')
+load(sprintf('%s/image/3_sample_overview.RData', path))
 
 ############################
 ###   4.1 - Segment QC   ###
@@ -13,7 +15,7 @@ load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/3_sample_overview.RDat
 library(GeomxTools)
 
 # Shift counts to one
-demoData <- shiftCountsOne(demoData, useDALogic = TRUE)
+data <- shiftCountsOne(data, useDALogic = TRUE)
 
 # Default QC cutoffs are commented in () adjacent to the respective parameters
 # study-specific values were selected after visualizing the QC results in more
@@ -28,12 +30,12 @@ QC_params <-
        maxNTCCount = 9000,     # Maximum counts observed in NTC well (1000)
        minNuclei = 20,         # Minimum # of nuclei estimated (100)
        minArea = 1000)         # Minimum segment area (5000)
-demoData <-
-  setSegmentQCFlags(demoData, 
+data <-
+  setSegmentQCFlags(data, 
                     qcCutoffs = QC_params)        
 
 # Collate QC Results
-QCResults <- protocolData(demoData)[["QCFlags"]]
+QCResults <- protocolData(data)[["QCFlags"]]
 flag_columns <- colnames(QCResults)
 QC_Summary <- data.frame(Pass = colSums(!QCResults[, flag_columns]),
                          Warning = colSums(QCResults[, flag_columns]))
@@ -76,60 +78,60 @@ QC_histogram <- function(assay_data = NULL,
 # Column to plot
 col_by <- "segment"
 
-QC_histogram(sData(demoData), "Trimmed (%)", col_by, 80)
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_trimmed_percentage.png", device='png')
+QC_histogram(sData(data), "Trimmed (%)", col_by, 80)
+ggsave(sprintf("%s/plots/4_1_2_trimmed_percentage.png", path), device='png')
 
-QC_histogram(sData(demoData), "Stitched (%)", col_by, 80)
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_stitched_percentage.png", device='png')
+QC_histogram(sData(data), "Stitched (%)", col_by, 80)
+ggsave(sprintf("%s/plots/4_1_2_stitched_percentage.png", path), device='png')
 
-QC_histogram(sData(demoData), "Aligned (%)", col_by, 75)
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_aligned_percentage.png", device='png')
+QC_histogram(sData(data), "Aligned (%)", col_by, 75)
+ggsave(sprintf("%s/plots/4_1_2_aligned_percentage.png", path), device='png')
 
-QC_histogram(sData(demoData), "Saturated (%)", col_by, 50) +
+QC_histogram(sData(data), "Saturated (%)", col_by, 50) +
   labs(title = "Sequencing Saturation (%)",
        x = "Sequencing Saturation (%)")
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_satured_percentage.png", device='png')
+ggsave(sprintf("%s/plots/4_1_2_satured_percentage.png", path), device='png')
 
-QC_histogram(sData(demoData), "area", col_by, 1000, scale_trans = "log10")
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_area.png", device='png')
+QC_histogram(sData(data), "area", col_by, 1000, scale_trans = "log10")
+ggsave(sprintf("%s/plots/4_1_2_area.png", path), device='png')
 
-QC_histogram(sData(demoData), "nuclei", col_by, 20)
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_nuclei.png", device='png')
+QC_histogram(sData(data), "nuclei", col_by, 20)
+ggsave(sprintf("%s/plots/4_1_2_nuclei.png", path), device='png')
 
 
 # calculate the negative geometric means for each module
 negativeGeoMeans <- 
-  esBy(negativeControlSubset(demoData), 
+  esBy(negativeControlSubset(data), 
        GROUP = "Module", 
        FUN = function(x) { 
          assayDataApply(x, MARGIN = 2, FUN = ngeoMean, elt = "exprs") 
        }) 
-protocolData(demoData)[["NegGeoMean"]] <- negativeGeoMeans
+protocolData(data)[["NegGeoMean"]] <- negativeGeoMeans
 
 # explicitly copy the Negative geoMeans from sData to pData
 negCols <- paste0("NegGeoMean_", modules)
-pData(demoData)[, negCols] <- sData(demoData)[["NegGeoMean"]]
+pData(data)[, negCols] <- sData(data)[["NegGeoMean"]]
 for(ann in negCols) {
-  plt <- QC_histogram(pData(demoData), ann, col_by, 2, scale_trans = "log10")
+  plt <- QC_histogram(pData(data), ann, col_by, 2, scale_trans = "log10")
   print(plt)
-  ggsave(sprintf("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_1_2_NegGeoMean_%s.png", ann), device='png')
+  ggsave(sprintf("%s/plots/4_1_2_NegGeoMean_%s.png", path, ann), device='png')
 }
 
 # detatch neg_geomean columns ahead of aggregateCounts call
-pData(demoData) <- pData(demoData)[, !colnames(pData(demoData)) %in% negCols]
+pData(data) <- pData(data)[, !colnames(pData(data)) %in% negCols]
 
 # show all NTC values, Freq = # of Segments with a given NTC count:
 ntc_count_table <- kable(
-  table(NTC_Count = sData(demoData)$NTC),
+  table(NTC_Count = sData(data)$NTC),
   col.names = c("NTC Count", "# of Segments"),
   caption="Number of Segments with a given NTC count"
 )
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_1_2_table_ntc_count.txt")
+file_conn <- file(sprintf("%s/data/4_1_2_table_ntc_count.txt", path))
 writeLines(ntc_count_table, file_conn)
 close(file_conn)
 
 qc_summary_table <- kable(QC_Summary, caption="QC Summary Table for each Segment")
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_1_2_table_qc_summary.txt")
+file_conn <- file(sprintf("%s/data/4_1_2_table_qc_summary.txt", path))
 writeLines(qc_summary_table, file_conn)
 close(file_conn)
 
@@ -137,12 +139,11 @@ close(file_conn)
 ###   Section 4.1.3 - Remove flagged segments   ###
 ###################################################
 
-demoData <- demoData[, QCResults$QCStatus == "PASS"]
+data <- data[, QCResults$QCStatus == "PASS"]
 write.csv(
-  data.frame(dim(demoData)),
-  "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_1_3_dimensions_after_segment_qc.csv",
+  data.frame(dim(data)),
+  sprintf("%s/data/4_1_3_dimensions_after_segment_qc.csv", path)
 )
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_1_segment_qc.RData')
-
+save.image(sprintf('%s/image/4_1_segment_qc.RData', path))

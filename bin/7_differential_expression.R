@@ -13,20 +13,20 @@ load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/6_unsupervised_analys
 library(Biobase)
 
 # convert test variables to factors
-pData(target_demoData)$testRegion <- 
-  factor(pData(target_demoData)$region, c("glomerulus", "tubule"))
-pData(target_demoData)[["slide"]] <- 
-  factor(pData(target_demoData)[["slide name"]])
-assayDataElement(object = target_demoData, elt = "log_q") <-
-  assayDataApply(target_demoData, 2, FUN = log, base = 2, elt = "q_norm")
+pData(target_data)$testRegion <- 
+  factor(pData(target_data)$region, c("glomerulus", "tubule"))
+pData(target_data)[["slide"]] <- 
+  factor(pData(target_data)[["slide name"]])
+assayDataElement(object = target_data, elt = "log_q") <-
+  assayDataApply(target_data, 2, FUN = log, base = 2, elt = "q_norm")
 
 # run LMM:
 # formula follows conventions defined by the lme4 package
 results <- c()
 for(status in c("DKD", "normal")) {
-  ind <- pData(target_demoData)$class == status
+  ind <- pData(target_data)$class == status
   mixedOutmc <-
-    mixedModelDE(target_demoData[, ind],
+    mixedModelDE(target_data[, ind],
                  elt = "log_q",
                  modelFormula = ~ testRegion + (1 + testRegion | slide),
                  groupVar = "testRegion",
@@ -72,16 +72,16 @@ close(file_conn)
 ################################################
 
 # convert test variables to factors
-pData(target_demoData)$testClass <-
-  factor(pData(target_demoData)$class, c("normal", "DKD"))
+pData(target_data)$testClass <-
+  factor(pData(target_data)$class, c("normal", "DKD"))
 
 # run LMM:
 # formula follows conventions defined by the lme4 package
 results2 <- c()
 for(region in c("glomerulus", "tubule")) {
-  ind <- pData(target_demoData)$region == region
+  ind <- pData(target_data)$region == region
   mixedOutmc <-
-    mixedModelDE(target_demoData[, ind],
+    mixedModelDE(target_data[, ind],
                  elt = "log_q",
                  modelFormula = ~ testClass + (1 | slide),
                  groupVar = "testClass",

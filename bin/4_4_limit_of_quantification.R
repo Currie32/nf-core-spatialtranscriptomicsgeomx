@@ -13,18 +13,18 @@ cutoff <- 2
 minLOQ <- 2
 
 # Calculate LOQ per module tested
-LOQ <- data.frame(row.names = colnames(target_demoData))
+LOQ <- data.frame(row.names = colnames(target_data))
 for(module in modules) {
   vars <- paste0(c("NegGeoMean_", "NegGeoSD_"),
                  module)
-  if(all(vars[1:2] %in% colnames(pData(target_demoData)))) {
+  if(all(vars[1:2] %in% colnames(pData(target_data)))) {
     LOQ[, module] <-
       pmax(minLOQ,
-           pData(target_demoData)[, vars[1]] * 
-             pData(target_demoData)[, vars[2]] ^ cutoff)
+           pData(target_data)[, vars[1]] * 
+             pData(target_data)[, vars[2]] ^ cutoff)
   }
 }
-pData(target_demoData)$LOQ <- LOQ
+pData(target_data)$LOQ <- LOQ
 
 # Save image
 save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_4_limit_of_quantification.RData')

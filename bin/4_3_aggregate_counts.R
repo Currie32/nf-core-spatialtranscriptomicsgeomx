@@ -9,11 +9,11 @@ load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_2_probe_qc.RData')
 library(GeomxTools)
 
 # collapse to targets
-target_demoData <- aggregateCounts(demoData)
+target_data <- aggregateCounts(data)
 
-# Save the dimensions of target_demoData
+# Save the dimensions of target_data
 write.csv(
-  data.frame(dim(target_demoData)),
+  data.frame(dim(target_data)),
   "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/dimensions_target_data.csv",
 )
 

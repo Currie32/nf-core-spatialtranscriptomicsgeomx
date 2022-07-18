@@ -10,15 +10,15 @@ library(Biobase)
 
 LOQ_Mat <- c()
 for(module in modules) {
-  ind <- fData(target_demoData)$Module == module
-  Mat_i <- t(esApply(target_demoData[ind, ], MARGIN = 1,
+  ind <- fData(target_data)$Module == module
+  Mat_i <- t(esApply(target_data[ind, ], MARGIN = 1,
                      FUN = function(x) {
                        x > LOQ[, module]
                      }))
   LOQ_Mat <- rbind(LOQ_Mat, Mat_i)
 }
 # ensure ordering since this is stored outside of the geomxSet
-LOQ_Mat <- LOQ_Mat[fData(target_demoData)$TargetName, ]
+LOQ_Mat <- LOQ_Mat[fData(target_data)$TargetName, ]
 
 
 ##################################################
@@ -28,19 +28,19 @@ LOQ_Mat <- LOQ_Mat[fData(target_demoData)$TargetName, ]
 library(knitr)
 
 # Save detection rate information to pheno data
-pData(target_demoData)$GenesDetected <- 
+pData(target_data)$GenesDetected <- 
   colSums(LOQ_Mat, na.rm = TRUE)
-pData(target_demoData)$GeneDetectionRate <-
-  pData(target_demoData)$GenesDetected / nrow(target_demoData)
+pData(target_data)$GeneDetectionRate <-
+  pData(target_data)$GenesDetected / nrow(target_data)
 
 # Determine detection thresholds: 1%, 5%, 10%, 15%, >15%
-pData(target_demoData)$DetectionThreshold <- 
-  cut(pData(target_demoData)$GeneDetectionRate,
+pData(target_data)$DetectionThreshold <- 
+  cut(pData(target_data)$GeneDetectionRate,
       breaks = c(0, 0.01, 0.05, 0.1, 0.15, 1),
       labels = c("<1%", "1-5%", "5-10%", "10-15%", ">15%"))
 
 # stacked bar plot of different cut points (1%, 5%, 10%, 15%)
-ggplot(pData(target_demoData),
+ggplot(pData(target_data),
        aes(x = DetectionThreshold)) +
   geom_bar(aes(fill = region)) +
   geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) +
@@ -55,26 +55,26 @@ ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_1_gene_detectio
 
 # cut percent genes detected at 1, 5, 10, 15
 table <- kable(
-  table(pData(target_demoData)$DetectionThreshold,
-        pData(target_demoData)$class),
+  table(pData(target_data)$DetectionThreshold,
+        pData(target_data)$class),
   caption="Gene detection rate by kidney tissue type")
 
 file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_1_table_gene_detection_rate_by_kidney_tissue_type.txt")
 writeLines(table, file_conn)
 close(file_conn)
 
-target_demoData <-
-  target_demoData[, pData(target_demoData)$GeneDetectionRate >= .1]
+target_data <-
+  target_data[, pData(target_data)$GeneDetectionRate >= .1]
 
-# Save the dimensions of target_demoData
+# Save the dimensions of target_data
 write.csv(
-  data.frame(dim(target_demoData)),
+  data.frame(dim(target_data)),
   "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_1_dimensions_target_data_after_gene_detection_rate_filter.csv",
 )
 
 # select the annotations we want to show, use `` to surround column names with
 # spaces or special symbols
-count_mat <- count(pData(demoData), `slide name`, class, region, segment)
+count_mat <- count(pData(data), `slide name`, class, region, segment)
 # simplify the slide names
 count_mat$`slide name` <- 
   gsub("disease", "d",
@@ -112,18 +112,18 @@ ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_1_sample_overvi
 library(scales) # for percent
 
 # Calculate detection rate:
-LOQ_Mat <- LOQ_Mat[, colnames(target_demoData)]
-fData(target_demoData)$DetectedSegments <- rowSums(LOQ_Mat, na.rm = TRUE)
-fData(target_demoData)$DetectionRate <-
-  fData(target_demoData)$DetectedSegments / nrow(pData(target_demoData))
+LOQ_Mat <- LOQ_Mat[, colnames(target_data)]
+fData(target_data)$DetectedSegments <- rowSums(LOQ_Mat, na.rm = TRUE)
+fData(target_data)$DetectionRate <-
+  fData(target_data)$DetectedSegments / nrow(pData(target_data))
 
 # Gene of interest detection table
 goi <- c("PDCD1", "CD274", "IFNG", "CD8A", "CD68", "EPCAM",
          "KRT18", "NPHS1", "NPHS2", "CALB1", "CLDN8")
 goi_df <- data.frame(
   Gene = goi,
-  Number = fData(target_demoData)[goi, "DetectedSegments"],
-  DetectionRate = percent(fData(target_demoData)[goi, "DetectionRate"]))
+  Number = fData(target_data)[goi, "DetectedSegments"],
+  DetectionRate = percent(fData(target_data)[goi, "DetectionRate"]))
 
 write.csv(goi_df, "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_2_detection_rate_for_genes_of_interest.csv")
 
@@ -136,8 +136,8 @@ write.csv(goi_df, "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_2_det
 plot_detect <- data.frame(Freq = c(1, 5, 10, 20, 30, 50))
 plot_detect$Number <-
   unlist(lapply(c(0.01, 0.05, 0.1, 0.2, 0.3, 0.5),
-                function(x) {sum(fData(target_demoData)$DetectionRate >= x)}))
-plot_detect$Rate <- plot_detect$Number / nrow(fData(target_demoData))
+                function(x) {sum(fData(target_data)$DetectionRate >= x)}))
+plot_detect$Rate <- plot_detect$Number / nrow(fData(target_data))
 rownames(plot_detect) <- plot_detect$Freq
 
 ggplot(plot_detect, aes(x = as.factor(Freq), y = Rate, fill = Rate)) +
@@ -159,20 +159,20 @@ ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_3_genes_detecte
 
 # Subset to target genes detected in at least 10% of the samples.
 #   Also manually include the negative control probe, for downstream use
-negativeProbefData <- subset(fData(target_demoData), CodeClass == "Negative")
+negativeProbefData <- subset(fData(target_data), CodeClass == "Negative")
 neg_probes <- unique(negativeProbefData$TargetName)
-target_demoData <- 
-  target_demoData[fData(target_demoData)$DetectionRate >= 0.1 |
-                    fData(target_demoData)$TargetName %in% neg_probes, ]
+target_data <- 
+  target_data[fData(target_data)$DetectionRate >= 0.1 |
+                fData(target_data)$TargetName %in% neg_probes, ]
 
-# Save the dimensions of target_demoData
+# Save the dimensions of target_data
 write.csv(
-  data.frame(dim(target_demoData)),
+  data.frame(dim(target_data)),
   "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_3_dimensions_target_data_after_gene_detection_filter.csv",
 )
 
 # retain only detected genes of interest
-goi <- goi[goi %in% rownames(target_demoData)]
+goi <- goi[goi %in% rownames(target_data)]
 
 # Save image
 save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_5_filtering.RData')

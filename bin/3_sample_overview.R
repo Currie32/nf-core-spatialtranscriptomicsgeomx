@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/2_load_data.RData')
+load(sprintf('%s/image/2_load_data.RData', path))
 
 ############################
 ###   3 - Study Design   ###
@@ -10,6 +12,7 @@ load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/2_load_data.RData')
 ###   3.1 - Modules Used   ###
 ##############################
 
+library(BiocGenerics)
 library(knitr)
 
 pkcs <- annotation(data)
@@ -18,7 +21,7 @@ table <- kable(
   data.frame(PKCs = pkcs, modules = modules),
   caption="Check that the expected PKCs have been loaded"
 )
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/3_1_table_pkcs.txt")
+file_conn <- file(sprintf("%s/data/3_1_table_pkcs.txt", path))
 writeLines(table, file_conn)
 close(file_conn)
 
@@ -33,7 +36,7 @@ library(ggforce)
 
 # select the annotations we want to show, use `` to surround column names with
 # spaces or special symbols
-count_mat <- count(pData(demoData), `slide name`, class, region, segment)
+count_mat <- count(pData(data), `slide name`, class, region, segment)
 # simplify the slide names
 count_mat$`slide name` <- gsub("disease", "d",
                                gsub("normal", "n", count_mat$`slide name`))
@@ -59,7 +62,7 @@ ggplot(test_gr, aes(x, id = id, split = y, value = n)) +
   annotate(geom = "text", x = 4.19, y = 70, angle = 90, size = 5,
            hjust = 0.5, label = "100 segments")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/3_2_sankey_sample_overview.png", device='png')
+ggsave(sprintf("%s/plots/3_2_sankey_sample_overview.png", path), device='png')
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/3_sample_overview.RData')
+save.image(sprintf('%s/image/3_sample_overview.RData', path))

@@ -1,0 +1,7 @@
+data/
+image/
+.nextflow/
+.nextflow.log*
+null/
+plots/
+work/
