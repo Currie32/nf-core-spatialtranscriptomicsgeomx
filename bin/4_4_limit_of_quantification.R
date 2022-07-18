@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_3_aggregate_counts.RData')
+load(sprintf('%s/image/4_3_aggregate_counts.RData', path))
 
 #################################################
 ###   Section 4.4 - Limit of Quantification   ###
@@ -27,4 +29,4 @@ for(module in modules) {
 pData(target_data)$LOQ <- LOQ
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_4_limit_of_quantification.RData')
+save.image(sprintf('%s/image/4_4_limit_of_quantification.RData', path))

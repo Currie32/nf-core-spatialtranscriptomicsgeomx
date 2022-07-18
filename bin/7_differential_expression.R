@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/6_unsupervised_analysis.RData')
+load(sprintf('%s/image/6_unsupervised_analysis.RData', path))
 
 ###############################################
 ###   Section 7 - Differential Expression   ###
@@ -62,7 +64,7 @@ table <- kable(subset(results, Gene %in% goi & Subset == "normal"), digits = 3,
       caption = "DE results for Genes of Interest",
       align = "lc", row.names = FALSE)
 
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/7_2_table_differential_expression_genes_of_interest_within_slide_analysis.txt")
+file_conn <- file(sprintf("%s/data/7_2_table_differential_expression_genes_of_interest_within_slide_analysis.txt", path))
 writeLines(table, file_conn)
 close(file_conn)
 
@@ -110,10 +112,10 @@ kable(subset(results2, Gene %in% goi & Subset == "tubule"), digits = 3,
       caption = "DE results for Genes of Interest",
       align = "lc", row.names = FALSE)
 
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/7_3_table_differential_expression_genes_of_interest_between_slide_analysis.txt")
+file_conn <- file(sprintf("%s/data/7_3_table_differential_expression_genes_of_interest_between_slide_analysis.txt", path))
 writeLines(table, file_conn)
 close(file_conn)
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/7_differential_expression.RData')
+save.image(sprintf('%s/image/7_differential_expression.RData', path))
 

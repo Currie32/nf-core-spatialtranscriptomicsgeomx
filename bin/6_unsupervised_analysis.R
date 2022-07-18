@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/5_normalisation.RData')
+load(sprintf('%s/image/5_normalisation.RData', path))
 
 #############################################
 ###   Section 6 - Unsupervised Analysis   ###
@@ -30,7 +32,7 @@ ggplot(pData(target_data),
   geom_point(size = 3) +
   theme_bw()
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_1_unsupervised_analysis_umap.png", device='png')
+ggsave(sprintf("%s/plots/6_1_unsupervised_analysis_umap.png", path), device='png')
 
 
 # run tSNE
@@ -47,7 +49,7 @@ ggplot(pData(target_data),
   geom_point(size = 3) +
   theme_bw()
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_1_unsupervised_analysis_tsne.png", device='png')
+ggsave(sprintf("%s/plots/6_1_unsupervised_analysis_tsne.png", path), device='png')
 
 
 ##################################################
@@ -66,7 +68,7 @@ CV_dat <- assayDataApply(target_data,
                          elt = "log_q", MARGIN = 1, calc_CV)
 # show the highest CD genes and their CV values
 table <- data.frame(sort(CV_dat, decreasing = TRUE)[1:5])
-write.csv(table, "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/6_2_table_highest_cd_genes.csv")
+write.csv(table, sprintf("%s/data/6_2_table_highest_cd_genes.csv", path))
 
 # Identify genes in the top 3rd of the CV values
 GOI <- names(CV_dat)[CV_dat > quantile(CV_dat, 0.8)]
@@ -81,7 +83,7 @@ pheatmap(assayDataElement(target_data[GOI, ], elt = "log_q"),
          color = colorRampPalette(c("purple3", "black", "yellow2"))(120),
          annotation_col = pData(target_data)[, c("class", "segment", "region")])
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/6_2_clustering_genes_coefficient_of_variation.png", device='png')
+ggsave(sprintf("%s/plots/6_2_clustering_genes_coefficient_of_variation.png", path), device='png')
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/6_unsupervised_analysis.RData')
+save.image(sprintf('%s/image/6_unsupervised_analysis.RData', path))

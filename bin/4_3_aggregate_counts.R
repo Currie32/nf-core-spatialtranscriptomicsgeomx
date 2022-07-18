@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_2_probe_qc.RData')
+load(sprintf('%s/image/4_2_probe_qc.RData', path))
 
 ######################################################
 ###   Section 4.3 - Create Gene-level Count Data   ###
@@ -14,8 +16,8 @@ target_data <- aggregateCounts(data)
 # Save the dimensions of target_data
 write.csv(
   data.frame(dim(target_data)),
-  "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/dimensions_target_data.csv",
+  sprintf("%s/data/dimensions_target_data.csv", path),
 )
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_3_aggregate_counts.RData')
+save.image(sprintf'(%s/image/4_3_aggregate_counts.RData', path))

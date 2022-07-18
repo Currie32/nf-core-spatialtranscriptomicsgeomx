@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
 ###############################
 ###   2 - Getting Started   ###
@@ -45,4 +46,4 @@ data <- readNanoStringGeoMxSet(
 )
 
 # Save image
-save.image(args[1])
+save.image(sprintf('%s/image/2_load_data.RData', path))

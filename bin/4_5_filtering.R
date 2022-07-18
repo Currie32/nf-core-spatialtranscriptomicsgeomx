@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_4_limit_of_quantification.RData')
+load(sprintf('%s/image/4_4_limit_of_quantification.RData', path))
 
 ###################################
 ###   Section 4.5 - Filtering   ###
@@ -50,7 +52,7 @@ ggplot(pData(target_data),
        y = "Segments, #",
        fill = "Segment Type")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_1_gene_detection_rate_by_segment.png", device='png')
+ggsave(sprintf("%s/plots/4_5_1_gene_detection_rate_by_segment.png", path), device='png')
 
 
 # cut percent genes detected at 1, 5, 10, 15
@@ -59,7 +61,7 @@ table <- kable(
         pData(target_data)$class),
   caption="Gene detection rate by kidney tissue type")
 
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_1_table_gene_detection_rate_by_kidney_tissue_type.txt")
+file_conn <- file(sprintf("%s/data/4_5_1_table_gene_detection_rate_by_kidney_tissue_type.txt", path))
 writeLines(table, file_conn)
 close(file_conn)
 
@@ -69,7 +71,7 @@ target_data <-
 # Save the dimensions of target_data
 write.csv(
   data.frame(dim(target_data)),
-  "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_1_dimensions_target_data_after_gene_detection_rate_filter.csv",
+  sprintf("%s/data/4_5_1_dimensions_target_data_after_gene_detection_rate_filter.csv", path),
 )
 
 # select the annotations we want to show, use `` to surround column names with
@@ -102,7 +104,7 @@ ggplot(test_gr, aes(x, id = id, split = y, value = n)) +
   annotate(geom = "text", x = 4.19, y = 70, angle = 90, size = 5,
            hjust = 0.5, label = "100 segments")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_1_sample_overview_sankey_after_gene_detection_rate_filter.png", device='png')
+ggsave(sprintf("%s/plots/4_5_1_sample_overview_sankey_after_gene_detection_rate_filter.png", path), device='png')
 
 
 ###############################################
@@ -125,7 +127,7 @@ goi_df <- data.frame(
   Number = fData(target_data)[goi, "DetectedSegments"],
   DetectionRate = percent(fData(target_data)[goi, "DetectionRate"]))
 
-write.csv(goi_df, "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_2_detection_rate_for_genes_of_interest.csv")
+write.csv(goi_df, sprintf("%s/data/4_5_2_detection_rate_for_genes_of_interest.csv", path))
 
 
 ##########################################
@@ -154,7 +156,7 @@ ggplot(plot_detect, aes(x = as.factor(Freq), y = Rate, fill = Rate)) +
   labs(x = "% of Segments",
        y = "Genes Detected, % of Panel > LOQ")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/4_5_3_genes_detected_per_percentage_of_segments.png", device='png')
+ggsave(sprintf("%s/plots/4_5_3_genes_detected_per_percentage_of_segments.png", path), device='png')
 
 
 # Subset to target genes detected in at least 10% of the samples.
@@ -168,11 +170,11 @@ target_data <-
 # Save the dimensions of target_data
 write.csv(
   data.frame(dim(target_data)),
-  "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_5_3_dimensions_target_data_after_gene_detection_filter.csv",
+  sprintf("%s/data/4_5_3_dimensions_target_data_after_gene_detection_filter.csv", path),
 )
 
 # retain only detected genes of interest
 goi <- goi[goi %in% rownames(target_data)]
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_5_filtering.RData')
+save.image(sprintf('%s/image/4_5_filtering.RData', path))

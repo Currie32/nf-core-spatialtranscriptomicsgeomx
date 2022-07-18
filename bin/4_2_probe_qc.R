@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_1_segment_qc.RData')
+load(sprintf('%s/image/4_1_segment_qc.RData', path))
 
 ##################################
 ###   Section 4.2 - Probe QC   ###
@@ -42,10 +44,10 @@ ProbeQCPassed <-
 # Save the dimensions of ProbeQCPassed
 write.csv(
   data.frame(dim(ProbeQCPassed)),
-  "~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/4_2_2_dimensions_after_probe_qc.csv",
+  sprintf("%s/data/4_2_2_dimensions_after_probe_qc.csv", path)
 )
 
 data <- ProbeQCPassed 
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_2_probe_qc.RData')
+save.image(sprintf('%s/image/4_2_probe_qc.RData', path))

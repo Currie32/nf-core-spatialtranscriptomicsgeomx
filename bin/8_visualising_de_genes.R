@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/7_differential_expression.RData')
+load(sprintf('%s/image/7_differential_expression.RData', path))
 
 ############################################
 ###   Section 8 - Visualizing DE Genes   ###
@@ -63,7 +65,7 @@ ggplot(results,
   theme(legend.position = "bottom") +
   facet_wrap(~Subset, scales = "free_y")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_1_volcano_plots.png", device='png')
+ggsave(sprintf("%s/plots/8_1_volcano_plots.png", path), device='png')
 
 
 ####################################################
@@ -75,7 +77,7 @@ library(knitr)
 
 table <- kable(subset(results, Gene %in% c('PDHA1','ITGB1')), row.names = FALSE)
 
-file_conn <- file("~/Imperial/nf-core-spatialtranscriptomicsgeomx/data/8_2_model_results_genes_of_interest.txt")
+file_conn <- file(sprintf("%s/data/8_2_model_results_genes_of_interest.txt", path))
 writeLines(table, file_conn)
 close(file_conn)
 
@@ -91,7 +93,7 @@ ggplot(pData(target_data),
   facet_wrap(~class) +
   theme_bw()
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_2_violin_plot_gene_expression.png", device='png')
+ggsave(sprintf("%s/plots/8_2_violin_plot_gene_expression.png", path), device='png')
 
 
 glom <- pData(target_data)$region == "glomerulus"
@@ -118,7 +120,7 @@ ggplot(pData(target_data),
   labs(x = "PDHA1 Expression", y = "ITGB1 Expression") +
   facet_wrap(~class)
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_2_expression_patterns.png", device='png')
+ggsave(sprintf("%s/plots/8_2_expression_patterns.png", path), device='png')
 
 
 ######################################################
@@ -141,7 +143,7 @@ pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          color = colorRampPalette(c("purple3", "black", "yellow2"))(120),
          annotation_col = pData(target_data)[, c("region", "class")])
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_3_heatmap_significant_genes.png", device='png')
+ggsave(sprintf("%s/plots/8_3_heatmap_significant_genes.png", path), device='png')
 
 
 ###################################
@@ -176,7 +178,7 @@ ggplot(subset(results, !Gene %in% neg_probes),
   facet_wrap(~Subset, nrow = 2, ncol = 1)
 
 # Saved under section 8.4 instead of 9.3.1 to avoid confusion of which script produces this plot
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/8_4_ma_plot.png", device='png')
+ggsave(sprintf("%s/plots/8_4_ma_plot.png", path), device='png')
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/8_visualising_de_genes.RData')
+save.image(sprintf('%s/image/8_visualising_de_genes.RData', path))

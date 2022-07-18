@@ -28,7 +28,7 @@ workflow {
     image_normalisation = normalisation(params.path_to_data, image_filtering)
     image_unsupervised_analysis = unsupervised_analysis(params.path_to_data, image_normalisation)
     image_differential_expression = differential_expression(params.path_to_data, image_unsupervised_analysis)
-    visualising_de_genes(params.path_to_data, image_differential_expression)
+    image_unsupervised_analysis = visualising_de_genes(params.path_to_data, image_differential_expression)
 }
 
 process load_data {
@@ -64,7 +64,7 @@ process segment_qc {
     file image_sample_overview
 
     output:
-    stdout emit: image_sample_overview
+    stdout emit: image_segment_qc
 
     script:
     """
@@ -74,104 +74,112 @@ process segment_qc {
 
 process probe_qc {
     input:
-    file file_in
+    path path_to_data
+    file image_segment_qc
 
     output:
-    file file_out
+    stdout emit: image_probe_qc
 
     script:
     """
-    4_2_probe_qc.R
+    4_2_probe_qc.R $path_to_data
     """
 }
 
 process aggregate_counts {
     input:
-    file file_in
+    path path_to_data
+    file image_probe_qc
 
     output:
-    file file_out
+    stdout emit: image_aggregate_counts
 
     script:
     """
-    4_3_aggregate_counts.R
+    4_3_aggregate_counts.R $path_to_data
     """
 }
 
 process limit_of_quantification {
     input:
-    file file_in
+    path path_to_data
+    file image_aggregate_counts
 
     output:
-    file file_out
+    stdout emit: image_limit_of_quantification
 
     script:
     """
-    4_4_limit_of_quantification.R
+    4_4_limit_of_quantification.R $path_to_data
     """
 }
 
 process filtering {
     input:
-    file file_in
+    path path_to_data
+    file image_limit_of_quantification
 
     output:
-    file file_out
+    stdout emit: image_filtering
 
     script:
     """
-    4_5_filtering.R
+    4_5_filtering.R $path_to_data
     """
 }
 
 process normalisation {
     input:
-    file file_in
+    path path_to_data
+    file image_filtering
 
     output:
-    file file_out
+    stdout emit: image_normalisation
 
     script:
     """
-    5_normalisation.R
+    5_normalisation.R $path_to_data
     """
 }
 
 process unsupervised_analysis {
     input:
-    file file_in
+    path path_to_data
+    file image_normalisation
 
     output:
-    file file_out
+    stdout emit: image_unsupervised_analysis
 
     script:
     """
-    6_unsupervised_analysis.R
+    6_unsupervised_analysis.R $path_to_data
     """
 }
 
 process differential_expression {
     input:
-    file file_in
+    path path_to_data
+    file image_unsupervised_analysis
 
     output:
-    file file_out
+    stdout emit: image_differential_expression
 
     script:
     """
-    7_differential_expression.R
+    7_differential_expression.R $path_to_data
     """
 }
 
 process visualising_de_genes {
     input:
-    file file_in
+    path path_to_data
+    file image_differential_expression
 
     output:
-    file file_out
+    stdout emit: image_unsupervised_analysis
 
     script:
     """
-    8_visualising_de_genes.R
+    8_visualising_de_genes.R $path_to_data
     """
 }

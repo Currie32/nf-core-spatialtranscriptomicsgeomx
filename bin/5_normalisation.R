@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
+args = commandArgs(trailingOnly=TRUE)
+path = args[1]
 
-load('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/4_5_filtering.RData')
+load(sprintf('%s/image/4_5_filtering.RData', path))
 
 #####################################
 ###   Section 5 - Normalization   ###
@@ -52,7 +54,7 @@ btm_row <- plot_grid(plt2, plt3, nrow = 1, labels = c("B", ""),
                      rel_widths = c(0.43,0.57))
 plot_grid(plt1, btm_row, ncol = 1, labels = c("A", ""))
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/5_q3_values_vs_neg_geo_mean_of_neg_probes.png", device='png')
+ggsave(sprintf("%s/plots/5_q3_values_vs_neg_geo_mean_of_neg_probes.png", path), device='png')
 
 
 # Q3 norm (75th percentile) for WTA/CTA  with or without custom spike-ins
@@ -73,7 +75,7 @@ boxplot(exprs(target_data)[,1:10],
         log = "y", names = 1:10, xlab = "Segment",
         ylab = "Counts, Raw")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/5_segment_counts_raw.png", device='png')
+ggsave(sprintf("%s/plots/5_segment_counts_raw.png", path), device='png')
 
 
 boxplot(assayDataElement(target_data[,1:10], elt = "q_norm"),
@@ -81,7 +83,7 @@ boxplot(assayDataElement(target_data[,1:10], elt = "q_norm"),
         log = "y", names = 1:10, xlab = "Segment",
         ylab = "Counts, Q3 Normalized")
 
-ggsave("~/Imperial/nf-core-spatialtranscriptomicsgeomx/plots/5_segment_counts_normalised.png", device='png')
+ggsave(sprintf("%s/plots/5_segment_counts_normalised.png", path), device='png')
 
 # Save image
-save.image('~/Imperial/nf-core-spatialtranscriptomicsgeomx/image/5_normalisation.RData')
+save.image(sprintf('%s/image/5_normalisation.RData', path))
