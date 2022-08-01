@@ -25,7 +25,7 @@ workflow {
     image_normalisation = normalisation(params.path_to_data, image_filtering)
     image_unsupervised_analysis = unsupervised_analysis(params.path_to_data, image_normalisation)
     image_differential_expression = differential_expression(params.path_to_data, image_unsupervised_analysis)
-    image_unsupervised_analysis = visualising_de_genes(params.path_to_data, image_differential_expression)
+    image_visualing_de_genes = visualising_de_genes(params.path_to_data, image_differential_expression)
 }
 
 process load_data {
@@ -37,7 +37,10 @@ process load_data {
 
     script:
     """
-    2_load_data.R $path_to_data
+    mkdir -p data
+    mkdir -p image
+    mkdir -p plots
+    0_load_data.R $path_to_data
     """
 }
 
@@ -51,7 +54,7 @@ process sample_overview {
 
     script:
     """
-    3_sample_overview.R $path_to_data
+    1_sample_overview.R $path_to_data
     """
 }
 
@@ -65,7 +68,7 @@ process segment_qc {
 
     script:
     """
-    4_1_segment_qc.R $path_to_data
+    2_1_segment_qc.R $path_to_data
     """
 }
 
@@ -79,7 +82,7 @@ process probe_qc {
 
     script:
     """
-    4_2_probe_qc.R $path_to_data
+    2_2_probe_qc.R $path_to_data
     """
 }
 
@@ -93,7 +96,7 @@ process aggregate_counts {
 
     script:
     """
-    4_3_aggregate_counts.R $path_to_data
+    2_3_aggregate_counts.R $path_to_data
     """
 }
 
@@ -107,7 +110,7 @@ process limit_of_quantification {
 
     script:
     """
-    4_4_limit_of_quantification.R $path_to_data
+    2_4_limit_of_quantification.R $path_to_data
     """
 }
 
@@ -121,7 +124,7 @@ process filtering {
 
     script:
     """
-    4_5_filtering.R $path_to_data
+    2_5_filtering.R $path_to_data
     """
 }
 
@@ -135,7 +138,7 @@ process normalisation {
 
     script:
     """
-    5_normalisation.R $path_to_data
+    3_normalisation.R $path_to_data
     """
 }
 
@@ -149,7 +152,7 @@ process unsupervised_analysis {
 
     script:
     """
-    6_unsupervised_analysis.R $path_to_data
+    4_unsupervised_analysis.R $path_to_data
     """
 }
 
@@ -163,7 +166,7 @@ process differential_expression {
 
     script:
     """
-    7_differential_expression.R $path_to_data
+    5_differential_expression.R $path_to_data
     """
 }
 
@@ -177,6 +180,6 @@ process visualising_de_genes {
 
     script:
     """
-    8_visualising_de_genes.R $path_to_data
+    6_visualising_de_genes.R $path_to_data
     """
 }
