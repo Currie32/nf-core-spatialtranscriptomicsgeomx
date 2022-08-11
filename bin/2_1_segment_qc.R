@@ -86,8 +86,7 @@ QC_histogram(sData(data), "Aligned (%)", col_by, 75)
 ggsave(sprintf("%s/plots/2_1_2_aligned_percentage.png", path), device='png')
 
 QC_histogram(sData(data), "Saturated (%)", col_by, 50) +
-  labs(title = "Sequencing Saturation (%)",
-       x = "Sequencing Saturation (%)")
+  labs(title = "Sequencing Saturation (%)", x = "Sequencing Saturation (%)")
 ggsave(sprintf("%s/plots/2_1_2_saturation_percentage.png", path), device='png')
 
 QC_histogram(sData(data), "area", col_by, 1000, scale_trans = "log10")

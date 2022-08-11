@@ -117,10 +117,6 @@ for(region in c("glomerulus", "tubule")) {
   results2 <- rbind(results2, r_test)
 }
 
-kable(subset(results2, Gene %in% goi & Subset == "tubule"), digits = 3,
-      caption = "DE results for Genes of Interest",
-      align = "lc", row.names = FALSE)
-
 results2_df <- data.frame(results2)
 results2_df <- results2_df[
   (results2_df$Gene %in% goi & results2_df$Subset == "tubule"),
@@ -130,7 +126,7 @@ names(results2_df)[names(results2_df) == 'Pr...t..'] <- 'P-value'
 rownames(results2_df) <- NULL
 
 write.csv(
-  results_df,
+  results2_df,
   sprintf("%s/data/5_3_table_differential_expression_genes_of_interest_between_slide_analysis.csv", path),
   row.names=FALSE
 )
