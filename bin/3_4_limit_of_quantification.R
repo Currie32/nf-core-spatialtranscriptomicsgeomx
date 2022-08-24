@@ -4,10 +4,10 @@ pathBase = args[1]
 minLOQ = as.integer(args[2])
 cutoffLOQ = as.integer(args[3])
 
-load(sprintf('%s/image/2_3_aggregate_counts.RData', pathBase))
+load(sprintf('%s/image/3_3_aggregate_counts.RData', pathBase))
 
 #################################################
-###   Section 2.4 - Limit of Quantification   ###
+###   Section 3.4 - Limit of Quantification   ###
 #################################################
 
 library(Biobase)
@@ -28,4 +28,4 @@ for(module in modules) {
 pData(target_data)$LOQ <- LOQ
 
 # Save image
-save.image(sprintf('%s/image/2_4_limit_of_quantification.RData', pathBase))
+save.image(sprintf('%s/image/3_4_limit_of_quantification.RData', pathBase))

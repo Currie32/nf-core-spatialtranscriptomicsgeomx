@@ -6,14 +6,14 @@ slideNameShort1 = args[3]
 slideNameLong2 = args[4]
 slideNameShort2 = args[5]
 
-load(sprintf('%s/image/0_load_data.RData', pathBase))
+load(sprintf('%s/image/1_load_data.RData', pathBase))
 
 ############################
-###   1 - Study Design   ###
+###   2 - Study Design   ###
 ############################
 
 ##############################
-###   1.1 - Modules Used   ###
+###   2.1 - Modules Used   ###
 ##############################
 
 library(BiocGenerics)
@@ -25,13 +25,13 @@ table <- kable(
   data.frame(PKCs = pkcs, modules = modules),
   caption="Check that the expected PKCs have been loaded"
 )
-file_conn <- file(sprintf("%s/data/1_1_table_pkcs.txt", pathBase))
+file_conn <- file(sprintf("%s/data/2_1_table_pkcs.txt", pathBase))
 writeLines(table, file_conn)
 close(file_conn)
 
 
 #################################
-###   1.2 - Sample Overview   ###
+###   2.2 - Sample Overview   ###
 #################################
 
 library(Biobase)
@@ -66,7 +66,7 @@ ggplot(test_gr, aes(x, id = id, split = y, value = n)) +
   annotate(geom = "text", x = 4.19, y = 70, angle = 90, size = 5,
            hjust = 0.5, label = "100 segments")
 
-ggsave(sprintf("%s/plots/1_2_sankey_sample_overview.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/2_2_sankey_sample_overview.png", pathBase), device='png')
 
 # Save image
-save.image(sprintf('%s/image/1_sample_overview.RData', pathBase))
+save.image(sprintf('%s/image/2_sample_overview.RData', pathBase))

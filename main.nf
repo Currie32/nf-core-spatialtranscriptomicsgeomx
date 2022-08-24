@@ -159,7 +159,7 @@ process load_data {
     mkdir -p data
     mkdir -p image
     mkdir -p plots
-    0_load_data.R $pathBase $pathInputData $pkcFiles $annotationFile
+    1_load_data.R $pathBase $pathInputData $pkcFiles $annotationFile
     """
 }
 
@@ -177,7 +177,7 @@ process sample_overview {
 
     script:
     """
-    1_sample_overview.R $pathBase $slideNameLong1 $slideNameShort1 $slideNameLong2 $slideNameShort2
+    2_sample_overview.R $pathBase $slideNameLong1 $slideNameShort1 $slideNameLong2 $slideNameShort2
     """
 }
 
@@ -201,7 +201,7 @@ process segment_qc {
 
     script:
     """
-    2_1_segment_qc.R $pathBase $minSegmentReads $percentTrimmed $percentStitched $percentAligned \
+    3_1_segment_qc.R $pathBase $minSegmentReads $percentTrimmed $percentStitched $percentAligned \
     $percentSaturation $minNegativeCount $maxNTCCount $minNuclei $minArea $region1
     """
 }
@@ -218,7 +218,7 @@ process probe_qc {
 
     script:
     """
-    2_2_probe_qc.R $pathBase $minProbeRatio $percentFailGrubbs
+    3_2_probe_qc.R $pathBase $minProbeRatio $percentFailGrubbs
     """
 }
 
@@ -232,7 +232,7 @@ process aggregate_counts {
 
     script:
     """
-    2_3_aggregate_counts.R $pathBase
+    3_3_aggregate_counts.R $pathBase
     """
 }
 
@@ -248,7 +248,7 @@ process limit_of_quantification {
 
     script:
     """
-    2_4_limit_of_quantification.R $pathBase $minLOQ $cutoffLOQ
+    3_4_limit_of_quantification.R $pathBase $minLOQ $cutoffLOQ
     """
 }
 
@@ -269,7 +269,7 @@ process filtering {
 
     script:
     """
-    2_5_filtering.R $pathBase $geneDetectionRateThreshold $genesOfInterest $detectionRateThreshold \
+    3_5_filtering.R $pathBase $geneDetectionRateThreshold $genesOfInterest $detectionRateThreshold \
         $slideNameLong1 $slideNameShort1 $slideNameLong2 $slideNameShort2
     """
 }
@@ -284,7 +284,7 @@ process normalisation {
 
     script:
     """
-    3_normalisation.R $pathBase
+    4_normalisation.R $pathBase
     """
 }
 
@@ -298,7 +298,7 @@ process unsupervised_analysis {
 
     script:
     """
-    4_unsupervised_analysis.R $pathBase
+    5_unsupervised_analysis.R $pathBase
     """
 }
 
@@ -317,7 +317,7 @@ process differential_expression {
 
     script:
     """
-    5_differential_expression.R $pathBase $genesOfInterest $region1 $region2 $class1 $class2
+    6_differential_expression.R $pathBase $genesOfInterest $region1 $region2 $class1 $class2
     """
 }
 
@@ -337,6 +337,6 @@ process visualising_de_genes {
 
     script:
     """
-    6_visualising_de_genes.R $pathBase $class1 $class2 $region1 $region2 $gene1 $gene2
+    7_visualising_de_genes.R $pathBase $class1 $class2 $region1 $region2 $gene1 $gene2
     """
 }

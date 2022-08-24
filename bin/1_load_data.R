@@ -6,11 +6,11 @@ pkcFiles = args[3]
 annotationFile = args[4]
 
 ###############################
-###   0 - Getting Started   ###
+###   1 - Getting Started   ###
 ###############################
 
 ##############################
-###   0.1 - Loading Data   ###
+###   1.1 - Loading Data   ###
 ##############################
 
 library(GeomxTools)
@@ -35,4 +35,4 @@ data <- readNanoStringGeoMxSet(
 )
 
 # Save image
-save.image(sprintf('%s/image/0_load_data.RData', pathBase))
+save.image(sprintf('%s/image/1_load_data.RData', pathBase))

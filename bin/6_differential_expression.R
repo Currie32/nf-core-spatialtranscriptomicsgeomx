@@ -7,14 +7,14 @@ region2 = args[4]
 class1 = args[5]
 class2 = args[6]
 
-load(sprintf('%s/image/4_unsupervised_analysis.RData', pathBase))
+load(sprintf('%s/image/5_unsupervised_analysis.RData', pathBase))
 
 ###############################################
-###   Section 5 - Differential Expression   ###
+###   Section 6 - Differential Expression   ###
 ###############################################
 
 ###############################################
-###   Section 5.1 - Within Slide Analysis   ###
+###   Section 6.1 - Within Slide Analysis   ###
 ###############################################
 
 library(Biobase)
@@ -60,7 +60,7 @@ for(status in c(class1, class2)) {
 
 
 ########################################################
-###   Section 5.2 - Interpreting the results table   ###
+###   Section 6.2 - Interpreting the results table   ###
 ########################################################
 
 library(knitr)
@@ -78,13 +78,13 @@ rownames(results_df) <- NULL
 
 write.csv(
   results_df,
-  sprintf("%s/data/5_2_table_differential_expression_genes_of_interest_within_slide_analysis.csv", pathBase),
+  sprintf("%s/data/6_2_table_differential_expression_genes_of_interest_within_slide_analysis.csv", pathBase),
   row.names=FALSE
 )
 
 
 ################################################
-###   Section 5.3 - Between Slide Analysis   ###
+###   Section 6.3 - Between Slide Analysis   ###
 ################################################
 
 # convert test variables to factors
@@ -132,10 +132,10 @@ rownames(results2_df) <- NULL
 
 write.csv(
   results2_df,
-  sprintf("%s/data/5_3_table_differential_expression_genes_of_interest_between_slide_analysis.csv", pathBase),
+  sprintf("%s/data/6_3_table_differential_expression_genes_of_interest_between_slide_analysis.csv", pathBase),
   row.names=FALSE
 )
 
 
 # Save image
-save.image(sprintf('%s/image/5_differential_expression.RData', pathBase))
+save.image(sprintf('%s/image/6_differential_expression.RData', pathBase))

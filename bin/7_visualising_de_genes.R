@@ -8,14 +8,14 @@ region2 = args[5]
 gene1 = args[6]
 gene2 = args[7]
 
-load(sprintf('%s/image/5_differential_expression.RData', pathBase))
+load(sprintf('%s/image/6_differential_expression.RData', pathBase))
 
 ############################################
-###   Section 6 - Visualizing DE Genes   ###
+###   Section 7 - Visualizing DE Genes   ###
 ############################################
 
 #######################################
-###   Section 6.1 - Volcano Plots   ###
+###   Section 7.1 - Volcano Plots   ###
 #######################################
 
 library(ggrepel)
@@ -71,11 +71,11 @@ ggplot(results,
   theme(legend.position = "bottom") +
   facet_wrap(~Subset, scales = "free_y")
 
-ggsave(sprintf("%s/plots/6_1_volcano_plots.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/7_1_volcano_plots.png", pathBase), device='png')
 
 
 ####################################################
-###   Section 6.2 - Plotting Genes of Interest   ###
+###   Section 7.2 - Plotting Genes of Interest   ###
 ####################################################
 
 library(Biobase)
@@ -88,7 +88,7 @@ names(results_df)[names(results_df) == 'Pr...t..'] <- 'P-value'
 
 write.csv(
   results_df,
-  sprintf("%s/data/6_2_model_results_genes_of_interest.csv", pathBase),
+  sprintf("%s/data/7_2_model_results_genes_of_interest.csv", pathBase),
   row.names=FALSE
 )
 
@@ -104,7 +104,7 @@ ggplot(pData(target_data),
   facet_wrap(~class) +
   theme_bw()
 
-ggsave(sprintf("%s/plots/6_2_violin_plot_gene_expression.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/7_2_violin_plot_gene_expression.png", pathBase), device='png')
 
 
 glom <- pData(target_data)$region == region2
@@ -131,11 +131,11 @@ ggplot(pData(target_data),
   labs(x = sprintf("%s Expression", gene1), y = sprintf("%s Expression", gene2)) +
   facet_wrap(~class)
 
-ggsave(sprintf("%s/plots/6_2_expression_patterns.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/7_2_expression_patterns.png", pathBase), device='png')
 
 
 ######################################################
-###   Section 6.3 - Heatmap of Significant Genes   ###
+###   Section 7.3 - Heatmap of Significant Genes   ###
 ######################################################
 
 library(pheatmap)
@@ -144,7 +144,7 @@ library(pheatmap)
 GOI <- unique(subset(results, `FDR` < 0.001)$Gene)
 
 dev.off()
-png(sprintf("%s/plots/6_3_heatmap_significant_genes.png", pathBase), width=360, height=260)
+png(sprintf("%s/plots/7_3_heatmap_significant_genes.png", pathBase), width=360, height=260)
 pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          scale = "row", 
          show_rownames = FALSE, show_colnames = FALSE,
@@ -160,4 +160,4 @@ dev.off()
 
 
 # Save image
-save.image(sprintf('%s/image/6_visualising_de_genes.RData', pathBase))
+save.image(sprintf('%s/image/7_visualising_de_genes.RData', pathBase))

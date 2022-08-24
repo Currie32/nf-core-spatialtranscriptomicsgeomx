@@ -13,14 +13,14 @@ minArea = as.integer(args[10])
 region1 = args[11]
 
 
-load(sprintf('%s/image/1_sample_overview.RData', pathBase))
+load(sprintf('%s/image/2_sample_overview.RData', pathBase))
 
 ############################
-###   2.1 - Segment QC   ###
+###   3.1 - Segment QC   ###
 ############################
 
 #####################################
-###   2.1.1 - Select Segment QC   ###
+###   3.1.1 - Select Segment QC   ###
 #####################################
 
 library(GeomxTools)
@@ -56,7 +56,7 @@ QC_Summary["TOTAL FLAGS", ] <-
     sum(QCResults[, "QCStatus"] == "WARNING"))
 
 ################################################
-###   Section 2.1.2 - Visualize Segment QC   ###
+###   Section 3.1.2 - Visualize Segment QC   ###
 ################################################
 
 library(ggplot2)
@@ -87,23 +87,23 @@ QC_histogram <- function(assay_data = NULL,
 col_by <- "segment"
 
 QC_histogram(sData(data), "Trimmed (%)", col_by, 80)
-ggsave(sprintf("%s/plots/2_1_2_trimmed_percentage.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_trimmed_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Stitched (%)", col_by, 80)
-ggsave(sprintf("%s/plots/2_1_2_stitched_percentage.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_stitched_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Aligned (%)", col_by, 75)
-ggsave(sprintf("%s/plots/2_1_2_aligned_percentage.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_aligned_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Saturated (%)", col_by, 50) +
   labs(title = "Sequencing Saturation (%)", x = "Sequencing Saturation (%)")
-ggsave(sprintf("%s/plots/2_1_2_saturation_percentage.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_saturation_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "area", col_by, 1000, scale_trans = "log10")
-ggsave(sprintf("%s/plots/2_1_2_area.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_area.png", pathBase), device='png')
 
 QC_histogram(sData(data), "nuclei", col_by, 20)
-ggsave(sprintf("%s/plots/2_1_2_nuclei.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_1_2_nuclei.png", pathBase), device='png')
 
 
 # calculate the negative geometric means for each module
@@ -121,7 +121,7 @@ pData(data)[, negCols] <- sData(data)[["NegGeoMean"]]
 for(ann in negCols) {
   plt <- QC_histogram(pData(data), ann, col_by, 2, scale_trans = "log10")
   print(plt)
-  ggsave(sprintf("%s/plots/2_1_2_NegGeoMean_%s.png", pathBase, ann), device='png')
+  ggsave(sprintf("%s/plots/3_1_2_NegGeoMean_%s.png", pathBase, ann), device='png')
 }
 
 # detatch neg_geomean columns ahead of aggregateCounts call
@@ -132,26 +132,26 @@ ntc_count_table <- data.frame(table(NTC_Count = sData(data)$NTC))
 colnames(ntc_count_table) <- c('NTC Count', '# of Segments')
 write.csv(
   ntc_count_table,
-  sprintf("%s/data/2_1_2_table_ntc_count.csv", pathBase),
+  sprintf("%s/data/3_1_2_table_ntc_count.csv", pathBase),
   row.names=FALSE
 )
 
 QC_Summary <- data.frame(QC_Summary)
 write.csv(
   QC_Summary,
-  sprintf("%s/data/2_1_2_table_qc_summary.csv", pathBase)
+  sprintf("%s/data/3_1_2_table_qc_summary.csv", pathBase)
 )
 
 
 ###################################################
-###   Section 2.1.3 - Remove flagged segments   ###
+###   Section 3.1.3 - Remove flagged segments   ###
 ###################################################
 
 data <- data[, QCResults$QCStatus == "PASS"]
 write.csv(
   data.frame(dim(data)),
-  sprintf("%s/data/2_1_3_dimensions_after_segment_qc.csv", pathBase)
+  sprintf("%s/data/3_1_3_dimensions_after_segment_qc.csv", pathBase)
 )
 
 # Save image
-save.image(sprintf('%s/image/2_1_segment_qc.RData', pathBase))
+save.image(sprintf('%s/image/3_1_segment_qc.RData', pathBase))

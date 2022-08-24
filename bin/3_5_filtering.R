@@ -13,10 +13,10 @@ print(args[3])
 print(genesOfInterest)
 
 
-load(sprintf('%s/image/2_4_limit_of_quantification.RData', pathBase))
+load(sprintf('%s/image/3_4_limit_of_quantification.RData', pathBase))
 
 ###################################
-###   Section 2.5 - Filtering   ###
+###   Section 3.5 - Filtering   ###
 ###################################
 
 library(Biobase)
@@ -35,7 +35,7 @@ LOQ_Mat <- LOQ_Mat[fData(target_data)$TargetName, ]
 
 
 ##################################################
-###   Section 2.5.1 - Segment Gene Detection   ###
+###   Section 3.5.1 - Segment Gene Detection   ###
 ##################################################
 
 library(dplyr)
@@ -66,7 +66,7 @@ ggplot(pData(target_data),
        y = "Segments, #",
        fill = "Segment Type")
 
-ggsave(sprintf("%s/plots/2_5_1_gene_detection_rate_by_segment.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_5_1_gene_detection_rate_by_segment.png", pathBase), device='png')
 
 
 # cut percent genes detected at 1, 5, 10, 15
@@ -81,7 +81,7 @@ names(gene_detection_rates)[names(gene_detection_rates) == 'Var1'] <- 'Gene dete
 
 write.csv(
   gene_detection_rates,
-  sprintf("%s/data/2_5_1_table_gene_detection_rate_by_kidney_tissue_type.csv", pathBase),
+  sprintf("%s/data/3_5_1_table_gene_detection_rate_by_kidney_tissue_type.csv", pathBase),
   row.names=FALSE
 )
 
@@ -91,7 +91,7 @@ target_data <- target_data[, pData(target_data)$GeneDetectionRate >= geneDetecti
 # Save the dimensions of target_data
 write.csv(
   data.frame(dim(target_data)),
-  sprintf("%s/data/2_5_1_dimensions_target_data_after_gene_detection_rate_filter.csv", pathBase)
+  sprintf("%s/data/3_5_1_dimensions_target_data_after_gene_detection_rate_filter.csv", pathBase)
 )
 
 # select the annotations we want to show, use `` to surround column names with
@@ -124,11 +124,11 @@ ggplot(test_gr, aes(x, id = id, split = y, value = n)) +
   annotate(geom = "text", x = 4.19, y = 70, angle = 90, size = 5,
            hjust = 0.5, label = "100 segments")
 
-ggsave(sprintf("%s/plots/2_5_1_sample_overview_sankey_after_gene_detection_rate_filter.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_5_1_sample_overview_sankey_after_gene_detection_rate_filter.png", pathBase), device='png')
 
 
 ###############################################
-###   Section 2.5.2 - Gene Detection Rate   ###
+###   Section 3.5.2 - Gene Detection Rate   ###
 ###############################################
 
 library(scales) # for percent
@@ -147,13 +147,13 @@ genesOfInterest_df <- data.frame(
 
 write.csv(
   genesOfInterest_df,
-  sprintf("%s/data/2_5_2_detection_rate_for_genes_of_interest.csv", pathBase),
+  sprintf("%s/data/3_5_2_detection_rate_for_genes_of_interest.csv", pathBase),
   row.names=FALSE
 )
 
 
 ##########################################
-###   Section 2.5.3 - Gene Filtering   ###
+###   Section 3.5.3 - Gene Filtering   ###
 ##########################################
 
 # Plot detection rate:
@@ -178,7 +178,7 @@ ggplot(plot_detect, aes(x = as.factor(Freq), y = Rate, fill = Rate)) +
   labs(x = "% of Segments",
        y = "Genes Detected, % of Panel > LOQ")
 
-ggsave(sprintf("%s/plots/2_5_3_genes_detected_per_percentage_of_segments.png", pathBase), device='png')
+ggsave(sprintf("%s/plots/3_5_3_genes_detected_per_percentage_of_segments.png", pathBase), device='png')
 
 # Subset to target genes detected in at least 10% of the samples.
 #   Also manually include the negative control probe, for downstream use
@@ -191,11 +191,11 @@ target_data <-
 # Save the dimensions of target_data
 write.csv(
   data.frame(dim(target_data)),
-  sprintf("%s/data/2_5_3_dimensions_target_data_after_gene_detection_filter.csv", pathBase)
+  sprintf("%s/data/3_5_3_dimensions_target_data_after_gene_detection_filter.csv", pathBase)
 )
 
 # retain only detected genes of interest
 genesOfInterest <- genesOfInterest[genesOfInterest %in% rownames(target_data)]
 
 # Save image
-save.image(sprintf('%s/image/2_5_filtering.RData', pathBase))
+save.image(sprintf('%s/image/3_5_filtering.RData', pathBase))
