@@ -1,8 +1,14 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+class1 = args[2]
+class2 = args[3]
+region1 = args[4]
+region2 = args[5]
+gene1 = args[6]
+gene2 = args[7]
 
-load(sprintf('%s/image/5_differential_expression.RData', path))
+load(sprintf('%s/image/5_differential_expression.RData', pathBase))
 
 ############################################
 ###   Section 6 - Visualizing DE Genes   ###
@@ -29,7 +35,7 @@ results$Color <- factor(results$Color,
 results$invert_P <- (-log10(results$`Pr(>|t|)`)) * sign(results$Estimate)
 
 top_g <- c()
-for(cond in c("DKD", "normal")) {
+for(cond in c(class1, class2)) {
   ind <- results$Subset == cond
   top_g <- c(top_g,
              results[ind, 'Gene'][
@@ -48,7 +54,7 @@ ggplot(results,
   geom_vline(xintercept = c(0.5, -0.5), lty = "dashed") +
   geom_hline(yintercept = -log10(0.05), lty = "dashed") +
   geom_point() +
-  labs(x = "Enriched in Tubules <- log2(FC) -> Enriched in Glomeruli",
+  labs(x = sprintf("Enriched in %s <- log2(FC) -> Enriched in %s", region1, region2),
        y = "Significance, -log10(P)",
        color = "Significance") +
   scale_color_manual(values = c(`FDR < 0.001` = "dodgerblue",
@@ -65,7 +71,7 @@ ggplot(results,
   theme(legend.position = "bottom") +
   facet_wrap(~Subset, scales = "free_y")
 
-ggsave(sprintf("%s/plots/6_1_volcano_plots.png", path), device='png')
+ggsave(sprintf("%s/plots/6_1_volcano_plots.png", pathBase), device='png')
 
 
 ####################################################
@@ -76,56 +82,56 @@ library(Biobase)
 library(knitr)
 
 results_df <- data.frame(results)
-results_df <- results_df[results_df$Gene %in% c('PDHA1','ITGB1'), ]
+results_df <- results_df[results_df$Gene %in% c(gene1, gene2), ]
 rownames(results_df) <- NULL
 names(results_df)[names(results_df) == 'Pr...t..'] <- 'P-value'
 
 write.csv(
   results_df,
-  sprintf("%s/data/6_2_model_results_genes_of_interest.csv", path),
+  sprintf("%s/data/6_2_model_results_genes_of_interest.csv", pathBase),
   row.names=FALSE
 )
 
-# show expression for a single target: PDHA1
+# show expression for a single target
 ggplot(pData(target_data),
        aes(x = region, fill = region,
-           y = assayDataElement(target_data["PDHA1", ],
+           y = assayDataElement(target_data[gene1, ],
                                 elt = "q_norm"))) +
   geom_violin() +
-  geom_jitter(width = .2) +
-  labs(y = "PDHA1 Expression") +
+  geom_jitter(width = .2, alpha = 0.5) +
+  labs(y = sprintf("%s Expression", gene1)) +
   scale_y_continuous(trans = "log2") +
   facet_wrap(~class) +
   theme_bw()
 
-ggsave(sprintf("%s/plots/6_2_violin_plot_gene_expression.png", path), device='png')
+ggsave(sprintf("%s/plots/6_2_violin_plot_gene_expression.png", pathBase), device='png')
 
 
-glom <- pData(target_data)$region == "glomerulus"
+glom <- pData(target_data)$region == region2
 
-# show expression of PDHA1 vs ITGB1
+# show expression of two genes
 ggplot(pData(target_data),
-       aes(x = assayDataElement(target_data["PDHA1", ],
+       aes(x = assayDataElement(target_data[gene1, ],
                                 elt = "q_norm"),
-           y = assayDataElement(target_data["ITGB1", ],
+           y = assayDataElement(target_data[gene2, ],
                                 elt = "q_norm"),
            color = region)) +
   geom_vline(xintercept =
-               max(assayDataElement(target_data["PDHA1", glom],
+               max(assayDataElement(target_data[gene1, glom],
                                     elt = "q_norm")),
              lty = "dashed", col = "darkgray") +
   geom_hline(yintercept =
-               max(assayDataElement(target_data["ITGB1", !glom],
+               max(assayDataElement(target_data[gene2, !glom],
                                     elt = "q_norm")),
              lty = "dashed", col = "darkgray") +
-  geom_point(size = 3) +
+  geom_point(size = 3, alpha = 0.5) +
   theme_bw() +
   scale_x_continuous(trans = "log2") + 
   scale_y_continuous(trans = "log2") +
-  labs(x = "PDHA1 Expression", y = "ITGB1 Expression") +
+  labs(x = sprintf("%s Expression", gene1), y = sprintf("%s Expression", gene2)) +
   facet_wrap(~class)
 
-ggsave(sprintf("%s/plots/6_2_expression_patterns.png", path), device='png')
+ggsave(sprintf("%s/plots/6_2_expression_patterns.png", pathBase), device='png')
 
 
 ######################################################
@@ -137,7 +143,7 @@ library(pheatmap)
 # select top significant genes based on significance, plot with pheatmap
 GOI <- unique(subset(results, `FDR` < 0.001)$Gene)
 
-png(sprintf("%s/plots/6_3_heatmap_significant_genes.png", path))
+png(sprintf("%s/plots/6_3_heatmap_significant_genes.png", pathBase), width=360, height=260)
 pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          scale = "row", 
          show_rownames = FALSE, show_colnames = FALSE,
@@ -170,7 +176,7 @@ ggplot(subset(results, !Gene %in% neg_probes),
   geom_hline(yintercept = c(0.5, -0.5), lty = "dashed") +
   scale_x_continuous(trans = "log2") +
   geom_point(alpha = 0.5) + 
-  labs(y = "Enriched in Glomeruli <- log2(FC) -> Enriched in Tubules",
+  labs(y = sprintf("Enriched in %s <- log2(FC) -> Enriched in %s", region2, region1),
        x = "Mean Expression",
        color = "Significance") +
   scale_color_manual(values = c(`FDR < 0.001` = "dodgerblue",
@@ -184,7 +190,7 @@ ggplot(subset(results, !Gene %in% neg_probes),
   facet_wrap(~Subset, nrow = 2, ncol = 1)
 
 # Saved under section 6.4 instead of 9.3.1 to avoid confusion of which script produces this plot
-ggsave(sprintf("%s/plots/6_4_ma_plot.png", path), device='png')
+ggsave(sprintf("%s/plots/6_4_ma_plot.png", pathBase), device='png')
 
 # Save image
-save.image(sprintf('%s/image/6_visualising_de_genes.RData', path))
+save.image(sprintf('%s/image/6_visualising_de_genes.RData', pathBase))

@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
 
-load(sprintf('%s/image/3_normalisation.RData', path))
+load(sprintf('%s/image/3_normalisation.RData', pathBase))
 
 #############################################
 ###   Section 4 - Unsupervised Analysis   ###
@@ -32,7 +32,7 @@ ggplot(pData(target_data),
   geom_point(size = 3, alpha = 0.5) +
   theme_bw()
 
-ggsave(sprintf("%s/plots/4_1_unsupervised_analysis_umap.png", path), device='png')
+ggsave(sprintf("%s/plots/4_1_unsupervised_analysis_umap.png", pathBase), device='png')
 
 
 # run tSNE
@@ -49,7 +49,7 @@ ggplot(pData(target_data),
   geom_point(size = 3, alpha = 0.5) +
   theme_bw()
 
-ggsave(sprintf("%s/plots/4_1_unsupervised_analysis_tsne.png", path), device='png')
+ggsave(sprintf("%s/plots/4_1_unsupervised_analysis_tsne.png", pathBase), device='png')
 
 
 ##################################################
@@ -70,12 +70,12 @@ highest_cv <- data.frame(sort(CV_dat, decreasing = TRUE)[1:5])
 highest_cv$Genes <- rownames(highest_cv)
 rownames(highest_cv) <- NULL
 names(highest_cv)[names(highest_cv) == 'sort.CV_dat..decreasing...TRUE..1.5.'] <- 'Coefficient of variation'
-write.csv(highest_cv, sprintf("%s/data/4_2_table_highest_cd_genes.csv", path), row.names=FALSE)
+write.csv(highest_cv, sprintf("%s/data/4_2_table_highest_cd_genes.csv", pathBase), row.names=FALSE)
 
 # Identify genes in the top 3rd of the CV values
 GOI <- names(CV_dat)[CV_dat > quantile(CV_dat, 0.8)]
 
-png(sprintf("%s/plots/4_2_clustering_genes_coefficient_of_variation.png", path))
+png(sprintf("%s/plots/4_2_clustering_genes_coefficient_of_variation.png", pathBase), width=360, height=260)
 pheatmap(assayDataElement(target_data[GOI, ], elt = "log_q"),
          scale = "row", 
          show_rownames = FALSE, show_colnames = FALSE,
@@ -89,4 +89,4 @@ pheatmap(assayDataElement(target_data[GOI, ], elt = "log_q"),
 dev.off()
 
 # Save image
-save.image(sprintf('%s/image/4_unsupervised_analysis.RData', path))
+save.image(sprintf('%s/image/4_unsupervised_analysis.RData', pathBase))

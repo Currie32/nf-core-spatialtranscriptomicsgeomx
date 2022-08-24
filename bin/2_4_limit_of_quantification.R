@@ -1,8 +1,10 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+minLOQ = as.integer(args[2])
+cutoffLOQ = as.integer(args[3])
 
-load(sprintf('%s/image/2_3_aggregate_counts.RData', path))
+load(sprintf('%s/image/2_3_aggregate_counts.RData', pathBase))
 
 #################################################
 ###   Section 2.4 - Limit of Quantification   ###
@@ -10,9 +12,6 @@ load(sprintf('%s/image/2_3_aggregate_counts.RData', path))
 
 library(Biobase)
 
-# Define LOQ SD threshold and minimum value
-cutoff <- 2
-minLOQ <- 2
 
 # Calculate LOQ per module tested
 LOQ <- data.frame(row.names = colnames(target_data))
@@ -23,10 +22,10 @@ for(module in modules) {
     LOQ[, module] <-
       pmax(minLOQ,
            pData(target_data)[, vars[1]] * 
-             pData(target_data)[, vars[2]] ^ cutoff)
+             pData(target_data)[, vars[2]] ^ cutoffLOQ)
   }
 }
 pData(target_data)$LOQ <- LOQ
 
 # Save image
-save.image(sprintf('%s/image/2_4_limit_of_quantification.RData', path))
+save.image(sprintf('%s/image/2_4_limit_of_quantification.RData', pathBase))

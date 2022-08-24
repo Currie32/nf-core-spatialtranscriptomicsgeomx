@@ -1,8 +1,12 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+slideNameLong1 = args[2]
+slideNameShort1 = args[3]
+slideNameLong2 = args[4]
+slideNameShort2 = args[5]
 
-load(sprintf('%s/image/0_load_data.RData', path))
+load(sprintf('%s/image/0_load_data.RData', pathBase))
 
 ############################
 ###   1 - Study Design   ###
@@ -21,7 +25,7 @@ table <- kable(
   data.frame(PKCs = pkcs, modules = modules),
   caption="Check that the expected PKCs have been loaded"
 )
-file_conn <- file(sprintf("%s/data/1_1_table_pkcs.txt", path))
+file_conn <- file(sprintf("%s/data/1_1_table_pkcs.txt", pathBase))
 writeLines(table, file_conn)
 close(file_conn)
 
@@ -38,8 +42,8 @@ library(ggforce)
 # spaces or special symbols
 count_mat <- count(pData(data), `slide name`, class, region, segment)
 # simplify the slide names
-count_mat$`slide name` <- gsub("disease", "d",
-                               gsub("normal", "n", count_mat$`slide name`))
+count_mat$`slide name` <- gsub(slideNameLong1, slideNameShort1,
+                               gsub(slideNameLong2, slideNameShort2, count_mat$`slide name`))
 # gather the data and plot in order: class, slide name, region, segment
 test_gr <- gather_set_data(count_mat, 1:4)
 test_gr$x <- factor(test_gr$x,
@@ -62,7 +66,7 @@ ggplot(test_gr, aes(x, id = id, split = y, value = n)) +
   annotate(geom = "text", x = 4.19, y = 70, angle = 90, size = 5,
            hjust = 0.5, label = "100 segments")
 
-ggsave(sprintf("%s/plots/1_2_sankey_sample_overview.png", path), device='png')
+ggsave(sprintf("%s/plots/1_2_sankey_sample_overview.png", pathBase), device='png')
 
 # Save image
-save.image(sprintf('%s/image/1_sample_overview.RData', path))
+save.image(sprintf('%s/image/1_sample_overview.RData', pathBase))

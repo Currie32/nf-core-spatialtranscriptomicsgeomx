@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
 
-load(sprintf('%s/image/2_5_filtering.RData', path))
+load(sprintf('%s/image/2_5_filtering.RData', pathBase))
 
 #####################################
 ###   Section 3 - Normalization   ###
@@ -54,7 +54,7 @@ btm_row <- plot_grid(plt2, plt3, nrow = 1, labels = c("B", ""),
                      rel_widths = c(0.43,0.57))
 plot_grid(plt1, btm_row, ncol = 1, labels = c("A", ""))
 
-ggsave(sprintf("%s/plots/3_q3_values_vs_neg_geo_mean_of_neg_probes.png", path), device='png')
+ggsave(sprintf("%s/plots/3_q3_values_vs_neg_geo_mean_of_neg_probes.png", pathBase), device='png')
 
 
 # Q3 norm (75th percentile) for WTA/CTA  with or without custom spike-ins
@@ -70,21 +70,21 @@ target_data <- normalize(target_data,
                          toElt = "neg_norm")
 
 # visualize the first 10 segments with each normalization method
-png(sprintf("%s/plots/3_segment_counts_raw.png", path))
+png(sprintf("%s/plots/3_segment_counts_raw.png", pathBase), width=320, height=320)
 boxplot(exprs(target_data)[,1:10],
              col = "#9EDAE5", main = "Raw Counts",
              log = "y", names = 1:10, xlab = "Segment",
              ylab = "Counts, Raw")
 dev.off()
 
-png(sprintf("%s/plots/3_segment_counts_normalised.png", path))
+png(sprintf("%s/plots/3_segment_counts_normalised.png", pathBase), width=320, height=320)
 boxplot(assayDataElement(target_data[,1:10], elt = "q_norm"),
         col = "#2CA02C", main = "Q3 Norm Counts",
         log = "y", names = 1:10, xlab = "Segment",
         ylab = "Counts, Q3 Normalized")
 dev.off()
 
-png(sprintf("%s/plots/3_segment_counts_neg_norm.png", path))
+png(sprintf("%s/plots/3_segment_counts_neg_norm.png", pathBase), width=320, height=320)
 boxplot(assayDataElement(target_data[,1:10], elt = "neg_norm"),
         col = "#FF7F0E", main = "Neg Norm Counts",
         log = "y", names = 1:10, xlab = "Segment",
@@ -92,4 +92,4 @@ boxplot(assayDataElement(target_data[,1:10], elt = "neg_norm"),
 dev.off()
 
 # Save image
-save.image(sprintf('%s/image/3_normalisation.RData', path))
+save.image(sprintf('%s/image/3_normalisation.RData', pathBase))

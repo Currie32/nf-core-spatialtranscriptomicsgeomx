@@ -1,8 +1,13 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+genesOfInterest = args[2]
+region1 = args[3]
+region2 = args[4]
+class1 = args[5]
+class2 = args[6]
 
-load(sprintf('%s/image/4_unsupervised_analysis.RData', path))
+load(sprintf('%s/image/4_unsupervised_analysis.RData', pathBase))
 
 ###############################################
 ###   Section 5 - Differential Expression   ###
@@ -16,7 +21,7 @@ library(Biobase)
 
 # convert test variables to factors
 pData(target_data)$testRegion <- 
-  factor(pData(target_data)$region, c("glomerulus", "tubule"))
+  factor(pData(target_data)$region, c(region2, region1))
 pData(target_data)[["slide"]] <- 
   factor(pData(target_data)[["slide name"]])
 assayDataElement(object = target_data, elt = "log_q") <-
@@ -25,7 +30,7 @@ assayDataElement(object = target_data, elt = "log_q") <-
 # run LMM:
 # formula follows conventions defined by the lme4 package
 results <- c()
-for(status in c("DKD", "normal")) {
+for(status in c(class1, class2)) {
   ind <- pData(target_data)$class == status
   mixedOutmc <-
     mixedModelDE(target_data[, ind],
@@ -64,7 +69,7 @@ library(tidyr)
 
 results_df <- data.frame(results)
 results_df <- results_df[
-  (results_df$Gene %in% goi & results_df$Subset == "normal"),
+  (results_df$Gene %in% genesOfInterest & results_df$Subset == class2),
 ]
 results_df <- results_df %>% mutate_if(is.numeric, round, digits=3)
 names(results_df)[names(results_df) == 'Pr...t..'] <- 'P-value'
@@ -73,7 +78,7 @@ rownames(results_df) <- NULL
 
 write.csv(
   results_df,
-  sprintf("%s/data/5_2_table_differential_expression_genes_of_interest_within_slide_analysis.csv", path),
+  sprintf("%s/data/5_2_table_differential_expression_genes_of_interest_within_slide_analysis.csv", pathBase),
   row.names=FALSE
 )
 
@@ -84,12 +89,12 @@ write.csv(
 
 # convert test variables to factors
 pData(target_data)$testClass <-
-  factor(pData(target_data)$class, c("normal", "DKD"))
+  factor(pData(target_data)$class, c(class2, class1))
 
 # run LMM:
 # formula follows conventions defined by the lme4 package
 results2 <- c()
-for(region in c("glomerulus", "tubule")) {
+for(region in c(region2, region1)) {
   ind <- pData(target_data)$region == region
   mixedOutmc <-
     mixedModelDE(target_data[, ind],
@@ -119,7 +124,7 @@ for(region in c("glomerulus", "tubule")) {
 
 results2_df <- data.frame(results2)
 results2_df <- results2_df[
-  (results2_df$Gene %in% goi & results2_df$Subset == "tubule"),
+  (results2_df$Gene %in% genesOfInterest & results2_df$Subset == region1),
 ]
 results2_df <- results2_df %>% mutate_if(is.numeric, round, digits=3)
 names(results2_df)[names(results2_df) == 'Pr...t..'] <- 'P-value'
@@ -127,10 +132,10 @@ rownames(results2_df) <- NULL
 
 write.csv(
   results2_df,
-  sprintf("%s/data/5_3_table_differential_expression_genes_of_interest_between_slide_analysis.csv", path),
+  sprintf("%s/data/5_3_table_differential_expression_genes_of_interest_between_slide_analysis.csv", pathBase),
   row.names=FALSE
 )
 
 
 # Save image
-save.image(sprintf('%s/image/5_differential_expression.RData', path))
+save.image(sprintf('%s/image/5_differential_expression.RData', pathBase))

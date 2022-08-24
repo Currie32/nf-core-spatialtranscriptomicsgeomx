@@ -1,8 +1,10 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+minProbeRatio = as.numeric(args[2])
+percentFailGrubbs = as.integer(args[3])
 
-load(sprintf('%s/image/2_1_segment_qc.RData', path))
+load(sprintf('%s/image/2_1_segment_qc.RData', pathBase))
 
 ##################################
 ###   Section 2.2 - Probe QC   ###
@@ -18,8 +20,8 @@ library(GeomxTools)
 # Generally keep the qcCutoffs parameters unchanged. Set removeLocalOutliers to 
 # FALSE if you do not want to remove local outliers
 data <- setBioProbeQCFlags(data,
-                           qcCutoffs = list(minProbeRatio = 0.1,
-                                            percentFailGrubbs = 20),
+                           qcCutoffs = list(minProbeRatio = minProbeRatio,
+                                            percentFailGrubbs = percentFailGrubbs),
                            removeLocalOutliers = TRUE)
 
 ProbeQCResults <- fData(data)[["QCFlags"]]
@@ -44,10 +46,10 @@ ProbeQCPassed <-
 # Save the dimensions of ProbeQCPassed
 write.csv(
   data.frame(dim(ProbeQCPassed)),
-  sprintf("%s/data/2_2_2_dimensions_after_probe_qc.csv", path)
+  sprintf("%s/data/2_2_2_dimensions_after_probe_qc.csv", pathBase)
 )
 
 data <- ProbeQCPassed 
 
 # Save image
-save.image(sprintf('%s/image/2_2_probe_qc.RData', path))
+save.image(sprintf('%s/image/2_2_probe_qc.RData', pathBase))

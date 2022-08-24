@@ -1,8 +1,19 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
-path = args[1]
+pathBase = args[1]
+minSegmentReads = as.integer(args[2])
+percentTrimmed = as.integer(args[3])
+percentStitched = as.integer(args[4])
+percentAligned = as.integer(args[5])
+percentSaturation = as.integer(args[6])
+minNegativeCount = as.integer(args[7])
+maxNTCCount = as.integer(args[8])
+minNuclei = as.integer(args[9])
+minArea = as.integer(args[10])
+region1 = args[11]
 
-load(sprintf('%s/image/1_sample_overview.RData', path))
+
+load(sprintf('%s/image/1_sample_overview.RData', pathBase))
 
 ############################
 ###   2.1 - Segment QC   ###
@@ -21,15 +32,15 @@ data <- shiftCountsOne(data, useDALogic = TRUE)
 # study-specific values were selected after visualizing the QC results in more
 # detail below
 QC_params <-
-  list(minSegmentReads = 1000, # Minimum number of reads (1000)
-       percentTrimmed = 80,    # Minimum % of reads trimmed (80%)
-       percentStitched = 80,   # Minimum % of reads stitched (80%)
-       percentAligned = 75,    # Minimum % of reads aligned (80%)
-       percentSaturation = 50, # Minimum sequencing saturation (50%)
-       minNegativeCount = 1,   # Minimum negative control counts (10)
-       maxNTCCount = 9000,     # Maximum counts observed in NTC well (1000)
-       minNuclei = 20,         # Minimum # of nuclei estimated (100)
-       minArea = 1000)         # Minimum segment area (5000)
+  list(minSegmentReads = minSegmentReads, # Minimum number of reads (1000)
+       percentTrimmed = percentTrimmed,    # Minimum % of reads trimmed (80%)
+       percentStitched = percentStitched,   # Minimum % of reads stitched (80%)
+       percentAligned = percentAligned,    # Minimum % of reads aligned (80%)
+       percentSaturation = percentSaturation, # Minimum sequencing saturation (50%)
+       minNegativeCount = minNegativeCount,   # Minimum negative control counts (10)
+       maxNTCCount = maxNTCCount,     # Maximum counts observed in NTC well (1000)
+       minNuclei = minNuclei,         # Minimum # of nuclei estimated (100)
+       minArea = minArea)         # Minimum segment area (5000)
 data <- setSegmentQCFlags(data, qcCutoffs = QC_params)        
 
 # Collate QC Results
@@ -43,7 +54,6 @@ QCResults$QCStatus <- apply(QCResults, 1L, function(x) {
 QC_Summary["TOTAL FLAGS", ] <-
   c(sum(QCResults[, "QCStatus"] == "PASS"),
     sum(QCResults[, "QCStatus"] == "WARNING"))
-
 
 ################################################
 ###   Section 2.1.2 - Visualize Segment QC   ###
@@ -77,23 +87,23 @@ QC_histogram <- function(assay_data = NULL,
 col_by <- "segment"
 
 QC_histogram(sData(data), "Trimmed (%)", col_by, 80)
-ggsave(sprintf("%s/plots/2_1_2_trimmed_percentage.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_trimmed_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Stitched (%)", col_by, 80)
-ggsave(sprintf("%s/plots/2_1_2_stitched_percentage.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_stitched_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Aligned (%)", col_by, 75)
-ggsave(sprintf("%s/plots/2_1_2_aligned_percentage.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_aligned_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "Saturated (%)", col_by, 50) +
   labs(title = "Sequencing Saturation (%)", x = "Sequencing Saturation (%)")
-ggsave(sprintf("%s/plots/2_1_2_saturation_percentage.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_saturation_percentage.png", pathBase), device='png')
 
 QC_histogram(sData(data), "area", col_by, 1000, scale_trans = "log10")
-ggsave(sprintf("%s/plots/2_1_2_area.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_area.png", pathBase), device='png')
 
 QC_histogram(sData(data), "nuclei", col_by, 20)
-ggsave(sprintf("%s/plots/2_1_2_nuclei.png", path), device='png')
+ggsave(sprintf("%s/plots/2_1_2_nuclei.png", pathBase), device='png')
 
 
 # calculate the negative geometric means for each module
@@ -111,7 +121,7 @@ pData(data)[, negCols] <- sData(data)[["NegGeoMean"]]
 for(ann in negCols) {
   plt <- QC_histogram(pData(data), ann, col_by, 2, scale_trans = "log10")
   print(plt)
-  ggsave(sprintf("%s/plots/2_1_2_NegGeoMean_%s.png", path, ann), device='png')
+  ggsave(sprintf("%s/plots/2_1_2_NegGeoMean_%s.png", pathBase, ann), device='png')
 }
 
 # detatch neg_geomean columns ahead of aggregateCounts call
@@ -122,14 +132,14 @@ ntc_count_table <- data.frame(table(NTC_Count = sData(data)$NTC))
 colnames(ntc_count_table) <- c('NTC Count', '# of Segments')
 write.csv(
   ntc_count_table,
-  sprintf("%s/data/2_1_2_table_ntc_count.csv", path),
+  sprintf("%s/data/2_1_2_table_ntc_count.csv", pathBase),
   row.names=FALSE
 )
 
 QC_Summary <- data.frame(QC_Summary)
 write.csv(
   QC_Summary,
-  sprintf("%s/data/2_1_2_table_qc_summary.csv", path)
+  sprintf("%s/data/2_1_2_table_qc_summary.csv", pathBase)
 )
 
 
@@ -140,8 +150,8 @@ write.csv(
 data <- data[, QCResults$QCStatus == "PASS"]
 write.csv(
   data.frame(dim(data)),
-  sprintf("%s/data/2_1_3_dimensions_after_segment_qc.csv", path)
+  sprintf("%s/data/2_1_3_dimensions_after_segment_qc.csv", pathBase)
 )
 
 # Save image
-save.image(sprintf('%s/image/2_1_segment_qc.RData', path))
+save.image(sprintf('%s/image/2_1_segment_qc.RData', pathBase))
