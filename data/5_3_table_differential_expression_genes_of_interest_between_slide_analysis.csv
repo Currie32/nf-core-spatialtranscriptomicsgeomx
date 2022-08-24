@@ -1,0 +1,10 @@
+"Gene","Subset","Contrast","Estimate","P-value","FDR"
+"KRT18","tubule","normal - DKD",-0.096,0.748,0.997
+"CD68","tubule","normal - DKD",-0.726,0.124,0.965
+"CD8A","tubule","normal - DKD",-0.057,0.826,0.998
+"NPHS1","tubule","normal - DKD",-0.131,0.624,0.997
+"CALB1","tubule","normal - DKD",1.408,0.013,0.652
+"CD274","tubule","normal - DKD",-0.252,0.522,0.997
+"NPHS2","tubule","normal - DKD",-0.128,0.73,0.997
+"CLDN8","tubule","normal - DKD",0.979,0,0.058
+"EPCAM","tubule","normal - DKD",0.339,0.382,0.997

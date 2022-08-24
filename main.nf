@@ -50,7 +50,7 @@ cutoffLOQ = 2
 
 // filtering
 geneDetectionRateThreshold = 0.1
-genesOfInterest = "PDCD1,CD274,IFNG,CD8A,CD68,EPCAM,KRT18,NPHS1,NPHS2,CALB1,CLDN8"
+genesOfInterest = "CALB1,CD274,CD68,CD8A,CLDN8,EPCAM,IFNG,KRT18,NPHS1,PDCD1,NPHS2"
 detectionRateThreshold = 0.1
 
 // visualising_de_genes

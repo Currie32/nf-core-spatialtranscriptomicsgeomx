@@ -1,11 +1,9 @@
-data/
 image/
 .ipynb_checkpoints/
 *.DS_Store
 .nextflow/
 .nextflow.log*
 null/
-plots/
 .RData
 .Rhistory
 work/

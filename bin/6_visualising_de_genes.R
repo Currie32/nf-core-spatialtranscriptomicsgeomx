@@ -143,6 +143,7 @@ library(pheatmap)
 # select top significant genes based on significance, plot with pheatmap
 GOI <- unique(subset(results, `FDR` < 0.001)$Gene)
 
+dev.off()
 png(sprintf("%s/plots/6_3_heatmap_significant_genes.png", pathBase), width=360, height=260)
 pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          scale = "row", 
@@ -157,40 +158,6 @@ pheatmap(log2(assayDataElement(target_data[GOI, ], elt = "q_norm")),
          annotation_col = pData(target_data)[, c("region", "class")])
 dev.off()
 
-
-###################################
-###   Section 6.4 - MA Plot   ###
-###################################
-
-results$MeanExp <- rowMeans(assayDataElement(target_data, elt = "q_norm"))
-
-top_g2 <- results$Gene[results$Gene %in% top_g &
-                         results$FDR < 0.001 &
-                         abs(results$Estimate) > .5 &
-                         results$MeanExp > quantile(results$MeanExp, 0.9)]
-
-ggplot(subset(results, !Gene %in% neg_probes),
-       aes(x = MeanExp, y = Estimate,
-           size = -log10(`Pr(>|t|)`),
-           color = Color, label = Gene)) +
-  geom_hline(yintercept = c(0.5, -0.5), lty = "dashed") +
-  scale_x_continuous(trans = "log2") +
-  geom_point(alpha = 0.5) + 
-  labs(y = sprintf("Enriched in %s <- log2(FC) -> Enriched in %s", region2, region1),
-       x = "Mean Expression",
-       color = "Significance") +
-  scale_color_manual(values = c(`FDR < 0.001` = "dodgerblue",
-                                `FDR < 0.05` = "lightblue",
-                                `P < 0.05` = "orange2",
-                                `NS or FC < 0.5` = "gray")) +
-  geom_text_repel(data = subset(results, Gene %in% top_g2),
-                  size = 4, point.padding = 0.15, color = "black",
-                  min.segment.length = .1, box.padding = .2, lwd = 2) +
-  theme_bw(base_size = 16) +
-  facet_wrap(~Subset, nrow = 2, ncol = 1)
-
-# Saved under section 6.4 instead of 9.3.1 to avoid confusion of which script produces this plot
-ggsave(sprintf("%s/plots/6_4_ma_plot.png", pathBase), device='png')
 
 # Save image
 save.image(sprintf('%s/image/6_visualising_de_genes.RData', pathBase))

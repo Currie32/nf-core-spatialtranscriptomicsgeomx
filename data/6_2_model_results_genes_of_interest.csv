@@ -1,0 +1,5 @@
+"Gene","Subset","Contrast","Estimate","P-value","FDR","Color"
+"PDHA1","DKD","glomerulus - tubule",-1.06576499200518,0.00651585519513108,0.112265525479376,"P < 0.05"
+"ITGB1","DKD","glomerulus - tubule",0.676947371639221,0.0307687580972789,0.21926576483121,"P < 0.05"
+"PDHA1","normal","glomerulus - tubule",-1.54163144047833,6.42558448133972e-30,6.50975963804527e-27,"FDR < 0.001"
+"ITGB1","normal","glomerulus - tubule",1.50428305056522,1.70061141001e-24,8.61444709740563e-22,"FDR < 0.001"
