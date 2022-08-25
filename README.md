@@ -66,6 +66,8 @@ These steps map to script in [bin/](./bin/).
    nextflow run main.nf -with-docker currie32/st-geomx
    ```
 
+6. You can view the results from running the pipeline by opening the jupyter notebook: [summary_of_outputs.ipynb](./summary_of_outputs.ipynb)
+
 ## Documentation
 
 The nf-core/spatialtranscriptomicsgeomx pipeline comes with documentation about the pipeline [usage](https://nf-co.re/spatialtranscriptomicsgeomx/usage), [parameters](https://nf-co.re/spatialtranscriptomicsgeomx/parameters) and [output](https://nf-co.re/spatialtranscriptomicsgeomx/output).
