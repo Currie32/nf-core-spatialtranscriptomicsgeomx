@@ -9,10 +9,6 @@ slideNameShort1 = args[6]
 slideNameLong2 = args[7]
 slideNameShort2 = args[8]
 
-print(args[3])
-print(genesOfInterest)
-
-
 load(sprintf('%s/image/3_4_limit_of_quantification.RData', pathBase))
 
 ###################################
