@@ -1,0 +1,9 @@
+image/
+.ipynb_checkpoints/
+*.DS_Store
+.nextflow/
+.nextflow.log*
+null/
+.RData
+.Rhistory
+work/

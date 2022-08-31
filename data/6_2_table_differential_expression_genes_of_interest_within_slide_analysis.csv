@@ -1,0 +1,10 @@
+"Gene","Subset","Contrast","Estimate","P-value","FDR"
+"KRT18","normal","glomerulus - tubule",-1.169,0.076,0.237
+"CD68","normal","glomerulus - tubule",-0.153,0.289,0.483
+"CD8A","normal","glomerulus - tubule",-0.227,0.147,0.332
+"NPHS1","normal","glomerulus - tubule",3.809,0.001,0.012
+"CALB1","normal","glomerulus - tubule",-2.014,0.027,0.138
+"CD274","normal","glomerulus - tubule",0.223,0.031,0.147
+"NPHS2","normal","glomerulus - tubule",5.43,0.002,0.025
+"CLDN8","normal","glomerulus - tubule",-1.961,0.001,0.011
+"EPCAM","normal","glomerulus - tubule",-2.297,0,0.006

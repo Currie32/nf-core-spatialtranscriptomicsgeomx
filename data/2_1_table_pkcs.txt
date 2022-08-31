@@ -1,0 +1,5 @@
+Table: Check that the expected PKCs have been loaded
+
+|PKCs             |modules      |
+|:----------------|:------------|
+|Hsa_WTA_v1.0.pkc |Hsa_WTA_v1.0 |
